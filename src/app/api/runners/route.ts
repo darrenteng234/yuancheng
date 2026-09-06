@@ -1,0 +1,79 @@
+import { NextRequest, NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabase";
+import { requireAdmin, FORBIDDEN } from "@/lib/auth";
+export const dynamic = "force-dynamic";
+export async function GET() {
+  try {
+    if (!(await requireAdmin())) return FORBIDDEN();
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Service role not configured" }, { status: 500 });
+    }
+    const { data, error } = await supabaseAdmin.from("runners").select("*").order("name");
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(data);
+  } catch (err) {
+    console.error("GET /api/runners error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+export async function POST(req: NextRequest) {
+  try {
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Service role not configured" }, { status: 500 });
+    }
+    const body = await req.json();
+    // Strip protected fields
+    const { id, created_at, updated_at, ...safeBody } = body;
+    const { data, error } = await supabaseAdmin.from("runners").insert(safeBody).select().single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+
+    // Create notification for admins about new runner registration
+    const runnerName = safeBody.name || 'Unknown';
+    const runnerEmail = safeBody.email || 'no email';
+    void supabaseAdmin.from("notifications").insert({
+      type: 'info',
+      message: `New runner registration: ${runnerName} (${runnerEmail})`,
+      link: '/admin/runners',
+      is_read: false,
+    }).then(() => {}, (err: Error) => console.error("Failed to create notification:", err));
+
+    return NextResponse.json(data);
+  } catch (err) {
+    console.error("POST /api/runners error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+export async function PATCH(req: NextRequest) {
+  try {
+    if (!(await requireAdmin())) return FORBIDDEN();
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Service role not configured" }, { status: 500 });
+    }
+    const body = await req.json();
+    const { id, created_at, updated_at, ...updates } = body;
+    if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
+    const { data, error } = await supabaseAdmin.from("runners").update(updates).eq("id", id).select().single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json(data);
+  } catch (err) {
+    console.error("PATCH /api/runners error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+export async function DELETE(req: NextRequest) {
+  try {
+    if (!(await requireAdmin())) return FORBIDDEN();
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Service role not configured" }, { status: 500 });
+    }
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
+    const { error } = await supabaseAdmin.from("runners").delete().eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("DELETE /api/runners error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
