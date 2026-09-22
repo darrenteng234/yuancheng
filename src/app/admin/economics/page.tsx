@@ -1,392 +1,87 @@
-'use client';
+"use client";
+import React from "react";
+import { adminListPayments, listOrders } from "@/lib/platform-api";
+import { computeEconomics, isUnavailable, type Metric, type EconomicsReport } from "@/lib/domain/economics";
+import { Card, LoadingState, ErrorState, Alert } from "@/components/ui";
 
-import { useEffect, useState, useCallback } from 'react';
-import { getOrders, getRunners, getReceipts } from '@/lib/api';
-import {
-  calculateEconomics,
-  calculateProfitByRunner,
-  formatRM,
-  formatPercent,
-} from '@/lib/calculations';
-import type { Order, Runner, RunnerReceipt } from '@/types';
+// Platform economics — consumes the ONE canonical engine (lib/domain/economics).
+// No formulas live in this page.
+export default function AdminEconomics() {
+  const [state, setState] = React.useState<"loading" | "error" | "ready">("loading");
+  const [rep, setRep] = React.useState<EconomicsReport | null>(null);
 
-// ── Stat Card Component ──
-function StatCard({
-  label,
-  value,
-  sub,
-  color,
-}: {
-  label: string;
-  value: string | number;
-  sub?: string;
-  color?: string;
-}) {
+  const load = React.useCallback(() => {
+    setState("loading");
+    Promise.all([adminListPayments(), listOrders()])
+      .then(([payments, orders]) => { setRep(computeEconomics({ payments, orders })); setState("ready"); })
+      .catch(() => setState("error"));
+  }, []);
+  React.useEffect(() => { load(); }, [load]);
+
+  if (state === "loading") return <LoadingState />;
+  if (state === "error" || !rep) return <ErrorState onRetry={load} description="Could not load economics data." />;
+
   return (
-    <div className="stat-card">
-      <div className="stat-card-label">{label}</div>
-      <div className="stat-card-value" style={{ color: color || 'var(--stone-900)' }}>
-        {value}
+    <div>
+      <h1 style={{ fontSize: "var(--text-2xl)", fontWeight: 700, marginBottom: "var(--space-2)" }}>Economics</h1>
+      <p className="text-muted" style={{ marginBottom: "var(--space-5)" }}>
+        Money is derived from payment records. Values needing an input we don’t collect yet show as
+        <em> unavailable</em> — never faked as zero.
+      </p>
+
+      <div className="stat-grid">
+        <Stat label="Gross sales" value={money(rep.grossSales)} />
+        <Stat label="Payment fees" value={money(rep.paymentFees)} />
+        <Stat label="Platform fees" value={money(rep.platformFees)} hint="0 by config (no commission yet)" />
+        <Stat label="Refunds" value={money(rep.refunds)} />
+        <Stat label="Owed to providers" value={money(rep.providerAmount)} />
+        <Stat label="Paid out" value={money(rep.payoutAmount)} />
       </div>
-      {sub && <div className="text-xs text-muted">{sub}</div>}
+
+      <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, margin: "var(--space-6) 0 var(--space-3)" }}>Margins & contribution</h2>
+      <div className="stat-grid">
+        <MetricStat label="Cost of goods/services" m={rep.costOfGoods} fmt={money} />
+        <MetricStat label="Fulfilment cost" m={rep.fulfillmentCost} fmt={money} />
+        <MetricStat label="Gross margin" m={rep.grossMargin} fmt={(n) => `${n.toFixed(1)}%`} />
+        <MetricStat label="Net contribution" m={rep.netContribution} fmt={money} />
+        <MetricStat label="Subscription revenue" m={rep.subscriptionRevenue} fmt={money} />
+        <MetricStat label="Avg order value" m={rep.averageOrderValue} fmt={money} />
+      </div>
+
+      <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, margin: "var(--space-6) 0 var(--space-3)" }}>Orders</h2>
+      <div className="stat-grid">
+        <Stat label="Total orders" value={String(rep.totalOrders)} />
+        <Stat label="Paid+" value={String(rep.paidOrders)} />
+        <Stat label="Completed" value={String(rep.completedOrders)} />
+        <Stat label="Cancelled" value={String(rep.cancelledOrders)} />
+        <Stat label="Refunded" value={String(rep.refundedOrders)} />
+        <Stat label="Disputed" value={String(rep.disputedOrders)} />
+      </div>
     </div>
   );
 }
 
-// ── Scaling projection data (static) ──
-const SCALING_DATA = [
-  {
-    phase: 'Phase 1: Launch',
-    ordersPerDay: '5-10',
-    runners: '2-3',
-    monthlyRevenue: 'RM10K-20K',
-    monthlyRunnerCosts: 'RM6K-12K',
-    yourProfit: 'RM4K-8K',
-    bottleneck: 'Customer acquisition',
-  },
-  {
-    phase: 'Phase 2: Growth',
-    ordersPerDay: '20-50',
-    runners: '10-15',
-    monthlyRevenue: 'RM40K-100K',
-    monthlyRunnerCosts: 'RM24K-60K',
-    yourProfit: 'RM16K-40K',
-    bottleneck: 'Runner supply',
-  },
-  {
-    phase: 'Phase 3: Scale',
-    ordersPerDay: '50-200',
-    runners: '30-60',
-    monthlyRevenue: 'RM100K-400K',
-    monthlyRunnerCosts: 'RM60K-240K',
-    yourProfit: 'RM40K-160K',
-    bottleneck: 'Evidence review',
-  },
-  {
-    phase: 'Phase 4: Marketplace',
-    ordersPerDay: '200+',
-    runners: '100+',
-    monthlyRevenue: 'RM400K+',
-    monthlyRunnerCosts: 'RM240K+',
-    yourProfit: 'RM160K+',
-    bottleneck: 'Quality control',
-  },
-];
+function money(n: number) { return `RM ${n.toFixed(2)}`; }
 
-// ── Main Economics Page ──
-export default function EconomicsPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [runners, setRunners] = useState<Runner[]>([]);
-  const [receipts, setReceipts] = useState<RunnerReceipt[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const [ordersData, runnersData, receiptsData] = await Promise.all([
-        getOrders(),
-        getRunners(),
-        getReceipts(),
-      ]);
-      setOrders(ordersData);
-      setRunners(runnersData);
-      setReceipts(receiptsData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load economics data');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  // ── Loading state ──
-  if (loading) {
-    return (
-      <div className="admin-layout">
-        <div className="admin-main" style={{ marginLeft: 0 }}>
-          <div
-            className="admin-content"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '60vh',
-            }}
-          >
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 'var(--text-2xl)', marginBottom: 'var(--space-4)' }}>
-                ⏳
-              </div>
-              <p className="text-muted">Loading economics data...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Error state ──
-  if (error) {
-    return (
-      <div className="admin-layout">
-        <div className="admin-main" style={{ marginLeft: 0 }}>
-          <div className="admin-content">
-            <div className="alert alert-error">
-              <span>🚨</span>
-              <span>Error loading economics data: {error}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Calculations ──
-  // Filter completed/in_review orders for revenue calculations
-  const completedOrders = orders.filter(
-    (o) => o.status === 'completed' || o.status === 'in_review'
-  );
-
-  // Build order data for calculateEconomics (map receipt fields from receipts)
-  const ordersForCalculation = completedOrders.map((o) => {
-    // Find receipts for this order
-    const orderReceipts = receipts.filter((r) => r.order_id === o.id);
-    const verifiedReceipt = orderReceipts.find((r) => r.status === 'verified');
-    return {
-      sellingPrice: o.selling_price || 0,
-      receiptProductCost: verifiedReceipt?.product_cost || 0,
-      receiptTransportCost: verifiedReceipt?.transport_cost || 0,
-      receiptOtherCost: verifiedReceipt?.other_cost || 0,
-      status: o.status,
-    };
-  });
-
-  const economics = calculateEconomics(ordersForCalculation);
-
-  // Calculate profit by runner
-  const runnerProfits = runners.map((runner) => {
-    const runnerOrders = completedOrders.filter((o) => o.runner_id === runner.id);
-    const runnerReceiptsList = receipts.filter(
-      (r) => r.runner_id === runner.id && r.status === 'verified'
-    );
-
-    const ordersForRunnerCalc = runnerOrders.map((o) => {
-      const verifiedReceipt = runnerReceiptsList.find((r) => r.order_id === o.id);
-      return {
-        sellingPrice: o.selling_price || 0,
-        receiptProductCost: verifiedReceipt?.product_cost || 0,
-        receiptTransportCost: verifiedReceipt?.transport_cost || 0,
-        receiptOtherCost: verifiedReceipt?.other_cost || 0,
-        status: o.status,
-      };
-    });
-
-    const profit = calculateProfitByRunner(runner.id, runner.name, ordersForRunnerCalc);
-
-    // Payment due = sum of verified receipt amounts for this runner
-    const paymentDue = runnerReceiptsList.reduce(
-      (sum, r) => sum + (r.product_cost || 0) + (r.transport_cost || 0) + (r.other_cost || 0),
-      0
-    );
-
-    return {
-      runner,
-      ...profit,
-      paymentDue,
-    };
-  });
-
-  // Break-even: based on avg profit per order
-  const avgProfitPerOrder =
-    completedOrders.length > 0 ? economics.grossProfit / completedOrders.length : 0;
-  // Assuming fixed costs of RM0 for now (same as calculateEconomics)
-  const breakEvenOrders = avgProfitPerOrder > 0 ? Math.ceil(0 / avgProfitPerOrder) : 0;
-
-  // Runner payment due details for sub text
-  const runnerPaymentDetails = runnerProfits
-    .filter((rp) => rp.paymentDue > 0)
-    .map((rp) => `${rp.runner.name}: ${formatRM(rp.paymentDue)}`)
-    .join(' + ');
-
+function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="admin-layout">
-      <div className="admin-main" style={{ marginLeft: 0 }}>
-        <div className="admin-header">
-          <div>
-            <h2 style={{ fontWeight: 700 }}>Economics &amp; Pricing</h2>
-            <p className="text-sm text-muted">
-              Overview of profitability. Runner costs are tracked from actual receipts — costs
-              become accurate over time.
-            </p>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-            <div className="notif-container">
-              <div className="notif-bell">
-                <span style={{ fontSize: 20 }}>🔔</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="admin-content">
-          {/* Success Alert */}
-          <div className="alert alert-success" style={{ marginBottom: 'var(--space-6)' }}>
-            <span>✅</span>
-            <div>
-              <strong>Pricing model updated:</strong> You set selling price → Runner submits
-              receipts weekly → System calculates actual costs → Profit = selling price − actual
-              costs. All prices in Products &amp; Packages page are editable.
-            </div>
-          </div>
-
-          {/* KEY METRICS — 6 Stat Cards */}
-          <div className="stat-grid" style={{ marginBottom: 'var(--space-8)' }}>
-            <StatCard
-              label="Total Revenue (Month)"
-              value={formatRM(economics.totalRevenue)}
-              sub={`From ${completedOrders.length} orders`}
-            />
-            <StatCard
-              label="Runner Costs (Actual)"
-              value={formatRM(economics.totalRunnerCosts)}
-              sub="From runner receipts"
-            />
-            <StatCard
-              label="Gross Profit"
-              value={formatRM(economics.grossProfit)}
-              sub="Revenue − runner costs"
-              color="var(--sage-600)"
-            />
-            <StatCard
-              label="Blended Margin"
-              value={formatPercent(economics.blendedMargin)}
-              sub={economics.blendedMargin >= 15 ? 'Target: 15% ✓' : 'Target: 15%'}
-              color="var(--sage-600)"
-            />
-            <StatCard
-              label="Break-Even"
-              value={breakEvenOrders + '/month'}
-              sub="At current avg profit"
-            />
-            <StatCard
-              label="Runner Payment Due"
-              value={formatRM(economics.runnerPaymentDue)}
-              sub={runnerPaymentDetails || 'No payments due'}
-              color="var(--earth-700)"
-            />
-          </div>
-
-          {/* PROFIT BY RUNNER */}
-          <h3 style={{ fontWeight: 700, marginBottom: 'var(--space-4)' }}>
-            Profit by Runner (June 2026)
-          </h3>
-          <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-4)' }}>
-            Runner payment = actual receipt amounts. Your profit = selling price − runner costs.
-            Tracked weekly/monthly.
-          </p>
-          <table className="data-table" style={{ marginBottom: 'var(--space-8)' }}>
-            <thead>
-              <tr>
-                <th>Runner</th>
-                <th>Orders</th>
-                <th>Reimbursable (Receipts)</th>
-                <th>Selling Price Total</th>
-                <th>Your Profit</th>
-                <th>Payment Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {runnerProfits.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    style={{
-                      textAlign: 'center',
-                      padding: 'var(--space-4)',
-                      color: 'var(--color-text-muted)',
-                    }}
-                  >
-                    No runner data yet
-                  </td>
-                </tr>
-              ) : (
-                runnerProfits.map((rp) => (
-                  <tr key={rp.runner.id}>
-                    <td>
-                      <strong>{rp.runner.name}</strong>
-                      {rp.runner.status === 'suspended' && (
-                        <br />
-                      )}
-                      {rp.runner.status === 'suspended' && (
-                        <span className="text-xs text-muted">Suspended</span>
-                      )}
-                    </td>
-                    <td>{rp.orders}</td>
-                    <td>{formatRM(rp.reimbursable)}</td>
-                    <td>{formatRM(rp.sellingPriceTotal)}</td>
-                    <td
-                      style={{
-                        color: rp.profit >= 0 ? 'var(--sage-600)' : 'var(--color-error)',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {formatRM(rp.profit)}
-                    </td>
-                    <td>
-                      {rp.runner.status === 'suspended' ? (
-                        <span className="badge badge-red" style={{ textTransform: 'none' }}>
-                          Not paid (suspended)
-                        </span>
-                      ) : rp.paymentDue > 0 ? (
-                        <button className="btn btn-primary btn-sm">
-                          Pay {formatRM(rp.paymentDue)}
-                        </button>
-                      ) : (
-                        <button className="btn btn-secondary btn-sm">Pay {formatRM(0)}</button>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-
-          {/* SCALING PROJECTIONS */}
-          <h3 style={{ fontWeight: 700, marginBottom: 'var(--space-4)' }}>
-            Scaling Projections
-          </h3>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Phase</th>
-                <th>Orders/Day</th>
-                <th>Runners</th>
-                <th>Monthly Revenue</th>
-                <th>Monthly Runner Costs</th>
-                <th>Your Profit</th>
-                <th>Bottleneck</th>
-              </tr>
-            </thead>
-            <tbody>
-              {SCALING_DATA.map((row) => (
-                <tr key={row.phase}>
-                  <td>{row.phase}</td>
-                  <td>{row.ordersPerDay}</td>
-                  <td>{row.runners}</td>
-                  <td>{row.monthlyRevenue}</td>
-                  <td>{row.monthlyRunnerCosts}</td>
-                  <td>{row.yourProfit}</td>
-                  <td>{row.bottleneck}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div className="stat-card">
+      <div className="stat-card-label">{label}</div>
+      <div className="stat-card-value">{value}</div>
+      {hint ? <div className="text-xs text-muted" style={{ marginTop: "var(--space-1)" }}>{hint}</div> : null}
     </div>
   );
+}
+
+function MetricStat({ label, m, fmt }: { label: string; m: Metric; fmt: (n: number) => string }) {
+  if (isUnavailable(m)) {
+    return (
+      <div className="stat-card">
+        <div className="stat-card-label">{label}</div>
+        <div style={{ fontSize: "var(--text-lg)", fontWeight: 600, color: "var(--color-text-muted)" }}>Unavailable</div>
+        <div className="text-xs text-muted" style={{ marginTop: "var(--space-1)" }}>Needs: {m.missingInput}</div>
+      </div>
+    );
+  }
+  return <Stat label={label} value={fmt(m)} />;
 }

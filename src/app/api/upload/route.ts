@@ -23,15 +23,20 @@ export async function POST(request: NextRequest) {
     // Sanitize folder: prevent path traversal
     const folder = rawFolder.replace(/\.\.[\\/]/g, "").replace(/[\\/]/g, "-").trim() || "general";
 
-    // Validate file type
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: "Invalid file type. Use JPG, PNG, or WebP." }, { status: 400 });
+    // Validate file type. Images and video are both valid evidence.
+    const imageTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+    const videoTypes = ["video/mp4", "video/webm", "video/quicktime"];
+    const isImage = imageTypes.includes(file.type);
+    const isVideo = videoTypes.includes(file.type);
+    if (!isImage && !isVideo) {
+      return NextResponse.json({ error: "Invalid file type. Use JPG, PNG, WebP, MP4, WebM, or MOV." }, { status: 400 });
     }
 
-    // Validate file size (5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "File too large. Max 5MB." }, { status: 400 });
+    // Per-type size cap: images 5MB, video 50MB.
+    const maxBytes = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      const mb = maxBytes / (1024 * 1024);
+      return NextResponse.json({ error: `File too large. Max ${mb}MB.` }, { status: 400 });
     }
 
     // Generate unique filename

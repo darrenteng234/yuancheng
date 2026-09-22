@@ -33,6 +33,15 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  // Protect provider routes — must be signed in (provider-role checked in APIs).
+  if (req.nextUrl.pathname.startsWith("/provider")) {
+    if (!session) {
+      const redirectUrl = new URL("/login", req.url);
+      redirectUrl.searchParams.set("redirect", req.nextUrl.pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
   // Protect runner routes (except register and login pages)
   if (
     req.nextUrl.pathname.startsWith("/runner") &&
@@ -49,5 +58,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/runner/:path*"],
+  matcher: ["/admin/:path*", "/runner/:path*", "/provider/:path*"],
 };

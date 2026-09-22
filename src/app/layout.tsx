@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { themeInitScript } from "@/components/ui/ThemeToggle";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://yuancheng.dev"),
@@ -43,7 +44,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Apply stored theme before paint to avoid a flash of the wrong theme. */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>{children}</body>
     </html>
   );

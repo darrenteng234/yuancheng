@@ -11,9 +11,10 @@ CREATE TABLE IF NOT EXISTS admins (
 -- Add user_id column to runners table if it doesn't exist
 ALTER TABLE runners ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
 
--- Enable RLS on admins
+-- Enable RLS on admins. NO anon policy: the admins table must be readable ONLY
+-- via the service-role API (which bypasses RLS). A permissive USING(true) policy
+-- would let anyone holding the public anon key enumerate admin user ids.
+-- (CREATE POLICY has no IF NOT EXISTS in Postgres — drop then create.)
 ALTER TABLE admins ENABLE ROW LEVEL SECURITY;
-
--- Only admins can read admins table
-CREATE POLICY IF NOT EXISTS "Admins can read admins" ON admins
-  FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Admins can read admins" ON admins;
+-- Intentionally no SELECT/INSERT/UPDATE/DELETE policy → deny-by-default to anon.

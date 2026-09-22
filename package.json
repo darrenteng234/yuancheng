@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:domain": "npx tsx scripts/domain-smoke.ts",
+    "test:provider": "npx tsx scripts/provider-smoke.ts",
+    "test:flow": "npx tsx scripts/flow-smoke.ts",
+    "test:economics": "npx tsx scripts/economics-smoke.ts",
+    "test": "npx tsx scripts/domain-smoke.ts && npx tsx scripts/provider-smoke.ts && npx tsx scripts/flow-smoke.ts && npx tsx scripts/economics-smoke.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^6.6.0",
