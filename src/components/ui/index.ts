@@ -13,4 +13,3 @@ export { Modal } from "./Modal";
 export type { ModalProps } from "./Modal";
 export { DataTable } from "./Table";
 export type { Column, DataTableProps } from "./Table";
-export { ThemeToggle, themeInitScript } from "./ThemeToggle";

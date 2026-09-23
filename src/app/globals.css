@@ -15,35 +15,46 @@
      --bp-sm 480 · --bp-md 768 · --bp-lg 1024 · --bp-xl 1280
    ============================================================================ */
 :root {
-  /* ── 1. Raw palettes ──────────────────────────────────────────────────── */
-  --amber-50: #fdf8f0; --amber-100: #f9eddb; --amber-200: #f0d9b0; --amber-300: #e4c080;
-  --amber-400: #d4a574; --amber-500: #c4915a; --amber-600: #b8860b; --amber-700: #9a7209;
-  --amber-800: #7a5c07; --amber-900: #5c4505;
-  --stone-50: #f5f0eb; --stone-100: #e8e0d6; --stone-200: #d4c8b8; --stone-300: #b8a896;
-  --stone-400: #9a8a78; --stone-500: #7a6c5c; --stone-600: #5c5044; --stone-700: #3d352e;
-  --stone-800: #2a2420; --stone-900: #1b1816; --stone-950: #0f0d0b;
-  --earth-50: #faf6f2; --earth-100: #f0e8de; --earth-200: #e0d0bc; --earth-300: #c4a888;
-  --earth-400: #a07850; --earth-500: #8b4513; --earth-600: #6b3410; --earth-700: #4a240b;
-  --sage-50: #f4f7f4; --sage-100: #e4ebe4; --sage-500: #6b8f6b; --sage-600: #557355; --sage-700: #3f573f;
-  --terracotta-50: #fdf5f0; --terracotta-100: #f8e4d8; --terracotta-500: #c4704a; --terracotta-600: #a85a38;
-  --red-500: #b94a4a; --red-bg: #fdf2f2;
+  /* ── 1. Brand palette (Yuancheng V1 — calm/premium/warm) ──────────────── */
+  --ivory: #F7F4EE; --white: #FFFFFF; --ink: #1F2A24; --muted: #6D756F; --line: #E1DED5;
+  --evergreen: #1F5A47; --evergreen-dark: #174436; --brass: #B89A5A;
+  /* Tints derived from brand hues (backgrounds / hovers) */
+  --ivory-2: #F1EDE4; --ivory-hover: #EFEBE1;
+  --ink-2: #3A443E; --muted-2: #8A918B;
+  --evergreen-bg: #EAF1ED; --evergreen-tint: #D8E6DF;
+  --brass-bg: #F5EFE1;
+  --success: #2E6B55; --success-bg: #E7F0EB;
+  --warning: #A76F2A; --warning-bg: #F7EEDD;
+  --error-c: #B34B4B; --error-c-bg: #F7E9E7;
+  --info: #52748A; --info-bg: #E8EFF3;
 
-  /* ── 2. Semantic tokens — LIGHT (components use ONLY these) ────────────── */
-  --color-bg: var(--stone-50); --color-surface: #ffffff; --color-surface-2: var(--stone-50);
-  --color-surface-hover: #faf8f5;
-  --color-text: var(--stone-900); --color-text-secondary: var(--stone-600); --color-text-muted: var(--stone-400);
-  --color-border: var(--stone-200); --color-border-hover: var(--stone-300);
-  --color-primary: var(--amber-600); --color-primary-hover: var(--amber-700); --color-primary-bg: var(--amber-50);
-  --color-secondary: var(--stone-600); --color-secondary-hover: var(--stone-700);
-  --color-accent: var(--earth-500); --color-accent-bg: var(--earth-50);
-  --color-success: var(--sage-600); --color-success-bg: var(--sage-50);
-  --color-warning: var(--terracotta-500); --color-warning-bg: var(--terracotta-50);
-  --color-error: var(--red-500); --color-error-bg: var(--red-bg);
-  --color-focus: var(--amber-600); --focus-ring: 0 0 0 3px var(--amber-100);
-  /* On-color text (kept as tokens so dark theme can adjust) */
+  /* ── 2. Semantic tokens — single light theme (components use ONLY these) ─ */
+  --color-bg: var(--ivory); --color-surface: var(--white); --color-surface-2: var(--ivory-2);
+  --color-surface-hover: var(--ivory-hover);
+  --color-text: var(--ink); --color-text-secondary: var(--muted); --color-text-muted: var(--muted-2);
+  --color-border: var(--line); --color-border-hover: #D3CFC2;
+  --color-primary: var(--evergreen); --color-primary-hover: var(--evergreen-dark); --color-primary-bg: var(--evergreen-bg);
+  --color-secondary: var(--ink-2); --color-secondary-hover: var(--ink);
+  --color-accent: var(--brass); --color-accent-bg: var(--brass-bg);
+  --color-success: var(--success); --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning); --color-warning-bg: var(--warning-bg);
+  --color-error: var(--error-c); --color-error-bg: var(--error-c-bg);
+  --color-info: var(--info); --color-info-bg: var(--info-bg);
+  --color-focus: var(--evergreen); --focus-ring: 0 0 0 3px var(--evergreen-tint);
   --color-on-primary: #ffffff; --color-on-accent: #ffffff;
   /* Back-compat aliases (older pages referenced these) */
   --error: var(--color-error); --error-bg: var(--color-error-bg);
+
+  /* ── Legacy raw-scale compatibility — remap old component classes onto the
+     new brand palette so nothing breaks while pages migrate. amber→brass,
+     stone→ink/muted/line, earth→evergreen, sage→success, terracotta→warning. */
+  --amber-50: var(--brass-bg); --amber-100: #EDE3CC; --amber-300: #D8C79B; --amber-400: #C9B37F;
+  --amber-600: var(--brass); --amber-700: #9C8149; --amber-800: #7E6836;
+  --stone-50: var(--ivory); --stone-100: var(--ivory-2); --stone-300: var(--line);
+  --stone-400: var(--muted-2); --stone-600: var(--muted); --stone-700: var(--ink-2); --stone-900: var(--ink);
+  --earth-50: var(--evergreen-bg); --earth-100: var(--evergreen-tint); --earth-200: #C4D6CC; --earth-700: var(--evergreen-dark);
+  --sage-100: var(--success-bg); --sage-700: #24503F;
+  --terracotta-100: var(--warning-bg); --terracotta-600: var(--warning);
 
   /* ── 4. Typography ────────────────────────────────────────────────────── */
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -51,7 +62,7 @@
   --font-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
   --font-sans: var(--font-body); /* back-compat alias */
   --text-xs: 12px; --text-sm: 14px; --text-base: 16px; --text-lg: 18px;
-  --text-xl: 20px; --text-2xl: 24px; --text-3xl: 30px; --text-4xl: 36px; --text-5xl: 48px;
+  --text-xl: 20px; --text-2xl: 24px; --text-3xl: 30px; --text-4xl: 36px; --text-5xl: 48px; --text-6xl: 64px;
   --weight-normal: 400; --weight-medium: 500; --weight-semibold: 600; --weight-bold: 700;
   --leading-tight: 1.2; --leading-snug: 1.4; --leading-normal: 1.6; --leading-relaxed: 1.8;
   --tracking-tight: -0.01em; --tracking-normal: 0; --tracking-wide: 0.03em; --tracking-wider: 0.08em;
@@ -74,45 +85,7 @@
   color-scheme: light;
 }
 
-/* ── 3. Dark theme — redefine SEMANTIC tokens only ──────────────────────── */
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --color-bg: var(--stone-950); --color-surface: var(--stone-900); --color-surface-2: #241f1b;
-  --color-surface-hover: #2a2420;
-  --color-text: var(--stone-50); --color-text-secondary: var(--stone-300); --color-text-muted: var(--stone-500);
-  --color-border: #332c26; --color-border-hover: #463d34;
-  --color-primary: var(--amber-400); --color-primary-hover: var(--amber-300); --color-primary-bg: #3a2f1a;
-  --color-secondary: var(--stone-300); --color-secondary-hover: var(--stone-200);
-  --color-accent: var(--earth-300); --color-accent-bg: #2a2018;
-  --color-success: var(--sage-500); --color-success-bg: #1f2a1f;
-  --color-warning: var(--terracotta-500); --color-warning-bg: #2e2018;
-  --color-error: #e08585; --color-error-bg: #2e1a1a;
-  --color-focus: var(--amber-400); --focus-ring: 0 0 0 3px rgba(224,179,82,0.28);
-  --color-on-primary: #241f1a; --color-on-accent: #241f1a;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.32);
-  --shadow-lg: 0 10px 20px -3px rgba(0,0,0,0.4);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --color-bg: var(--stone-950); --color-surface: var(--stone-900); --color-surface-2: #241f1b;
-    --color-surface-hover: #2a2420;
-    --color-text: var(--stone-50); --color-text-secondary: var(--stone-300); --color-text-muted: var(--stone-500);
-    --color-border: #332c26; --color-border-hover: #463d34;
-    --color-primary: var(--amber-400); --color-primary-hover: var(--amber-300); --color-primary-bg: #3a2f1a;
-    --color-secondary: var(--stone-300); --color-secondary-hover: var(--stone-200);
-    --color-accent: var(--earth-300); --color-accent-bg: #2a2018;
-    --color-success: var(--sage-500); --color-success-bg: #1f2a1f;
-    --color-warning: var(--terracotta-500); --color-warning-bg: #2e2018;
-    --color-error: #e08585; --color-error-bg: #2e1a1a;
-    --color-focus: var(--amber-400); --focus-ring: 0 0 0 3px rgba(224,179,82,0.28);
-    --color-on-primary: #241f1a; --color-on-accent: #241f1a;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.32);
-    --shadow-lg: 0 10px 20px -3px rgba(0,0,0,0.4);
-  }
-}
+/* Single light theme — dark mode removed for V1. */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; -webkit-font-smoothing: antialiased; }
 body { font-family: var(--font-body); color: var(--color-text); background: var(--color-bg); line-height: var(--leading-normal); }
@@ -509,3 +482,137 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .ui-modal-close:hover { background: var(--color-surface-hover); color: var(--color-text); }
 .ui-modal-body { padding: var(--space-6); overflow-y: auto; }
 .ui-modal-footer { display: flex; gap: var(--space-3); justify-content: flex-end; padding: var(--space-4) var(--space-6); border-top: var(--border-width) solid var(--color-border); }
+
+/* ============================================================================
+   Marketing / discovery (Yuancheng V1 public surface)
+   ========================================================================== */
+.section { padding: var(--space-20) 0; }
+.section--tight { padding: var(--space-12) 0; }
+.section-alt { background: var(--color-surface-2); }
+.section-head { max-width: 720px; margin-bottom: var(--space-8); }
+.section-head h2 { font-size: var(--text-3xl); font-weight: 600; letter-spacing: var(--tracking-tight); color: var(--color-text); }
+.section-head p { margin-top: var(--space-3); color: var(--color-text-secondary); font-size: var(--text-lg); }
+.eyebrow { text-transform: uppercase; letter-spacing: var(--tracking-wider); font-size: var(--text-xs); font-weight: 600; color: var(--color-accent); }
+
+/* Hero */
+.hero { padding: var(--space-20) 0 var(--space-16); }
+.hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: var(--space-16); align-items: center; }
+.hero h1 { font-size: var(--text-6xl); line-height: 1.05; letter-spacing: -0.02em; font-weight: 600; color: var(--color-text); }
+.hero .hero-sub { margin-top: var(--space-5); font-size: var(--text-xl); line-height: var(--leading-snug); color: var(--color-text-secondary); max-width: 30ch; }
+.hero-ctas { margin-top: var(--space-8); display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.hero-visual { display: flex; justify-content: center; }
+
+/* Feature service card (hero editorial) */
+.feature-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; width: 100%; max-width: 380px; }
+.feature-card-img { height: 200px; background: linear-gradient(135deg, var(--evergreen) 0%, var(--evergreen-dark) 100%); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.85); }
+.feature-card-body { padding: var(--space-6); }
+.feature-card-body h3 { font-size: var(--text-xl); font-weight: 600; }
+.feature-card-body .fc-provider { color: var(--color-text-secondary); margin-top: 2px; }
+.feature-card-body .fc-place { color: var(--color-text-muted); font-size: var(--text-sm); margin-top: 2px; display:flex; align-items:center; gap:4px; }
+.feature-card-tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-4) 0; }
+.feature-card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: var(--space-4); }
+.feature-card-price { font-size: var(--text-2xl); font-weight: 600; color: var(--color-text); }
+
+/* Tags / pills */
+.tag { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: var(--radius-full); background: var(--color-surface-2); color: var(--color-text-secondary); font-size: var(--text-xs); font-weight: 500; border: 1px solid var(--color-border); }
+.tag--verified { background: var(--color-primary-bg); color: var(--color-primary); border-color: var(--evergreen-tint); }
+.tag--accent { background: var(--color-accent-bg); color: #7E6836; border-color: transparent; }
+
+/* Category chips */
+.chip-row { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.chip { padding: var(--space-3) var(--space-5); border-radius: var(--radius-full); border: 1px solid var(--color-border); background: var(--color-surface); font-weight: 500; font-size: var(--text-sm); color: var(--color-text); transition: all .15s ease; }
+.chip:hover, .chip[aria-selected="true"] { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-bg); }
+
+/* Discovery grid + cards */
+.disc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
+.disc-grid--2 { grid-template-columns: repeat(2, 1fr); }
+.disc-card { display: flex; flex-direction: column; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease; }
+.disc-card:hover { box-shadow: var(--shadow-md); border-color: var(--color-border-hover); transform: translateY(-2px); }
+.disc-card--row { flex-direction: row; align-items: center; gap: var(--space-4); padding: var(--space-4); }
+.disc-card--row .card-thumb { width: 56px; height: 56px; border-radius: var(--radius-md); flex: none; }
+.card-thumb { width: 100%; height: 168px; object-fit: cover; background: var(--color-surface-2); }
+.card-thumb--placeholder { display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); background: linear-gradient(135deg, var(--ivory-2), var(--evergreen-bg)); }
+.disc-card-body { padding: var(--space-5); display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.disc-card--row .disc-card-body { padding: 0; }
+.disc-card-title { font-size: var(--text-lg); font-weight: 600; color: var(--color-text); }
+.disc-card-sub { color: var(--color-text-secondary); font-size: var(--text-sm); }
+.disc-card-meta { display: flex; align-items: center; gap: 5px; color: var(--color-text-muted); font-size: var(--text-sm); }
+.disc-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.disc-card-stats { display: flex; gap: var(--space-5); margin-top: var(--space-2); color: var(--color-text-secondary); font-size: var(--text-sm); }
+.disc-card-stats strong { color: var(--color-text); }
+.disc-card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: var(--space-4); }
+.disc-card-price { font-size: var(--text-xl); font-weight: 600; color: var(--color-text); }
+.disc-card-cta { display: inline-flex; align-items: center; gap: 5px; color: var(--color-primary); font-weight: 600; font-size: var(--text-sm); }
+
+/* Steps / trust */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
+.step { padding: var(--space-6); border-radius: var(--radius-lg); background: var(--color-surface); border: 1px solid var(--color-border); }
+.step-n { width: 32px; height: 32px; border-radius: var(--radius-full); background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: var(--text-sm); }
+.step h3 { margin-top: var(--space-4); font-size: var(--text-lg); font-weight: 600; }
+.step p { margin-top: 6px; color: var(--color-text-secondary); font-size: var(--text-sm); }
+.trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }
+.trust-item { display: flex; gap: var(--space-3); align-items: flex-start; }
+.trust-item .ti-icon { color: var(--color-primary); flex: none; margin-top: 2px; }
+.trust-item h4 { font-size: var(--text-base); font-weight: 600; }
+.trust-item p { color: var(--color-text-secondary); font-size: var(--text-sm); margin-top: 2px; }
+
+/* CTA band */
+.cta-band { background: var(--evergreen); color: #fff; border-radius: var(--radius-xl); padding: var(--space-16); text-align: center; }
+.cta-band h2 { font-size: var(--text-4xl); font-weight: 600; color: #fff; }
+.cta-band p { margin: var(--space-3) auto 0; color: rgba(255,255,255,0.82); max-width: 46ch; }
+.cta-band .btn { margin-top: var(--space-6); }
+
+/* Search bar */
+.search-bar { display: flex; align-items: center; gap: var(--space-3); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5); box-shadow: var(--shadow-sm); }
+.search-bar input { flex: 1; border: none; outline: none; background: transparent; font-size: var(--text-base); color: var(--color-text); }
+.search-bar .sb-icon { color: var(--color-text-muted); }
+
+/* Tabs */
+.tabs { display: flex; gap: var(--space-2); border-bottom: 1px solid var(--color-border); margin-bottom: var(--space-8); flex-wrap: wrap; }
+.tab { padding: var(--space-3) var(--space-4); font-weight: 500; color: var(--color-text-secondary); border-bottom: 2px solid transparent; }
+.tab[aria-selected="true"] { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: var(--space-10); }
+  .hero h1 { font-size: var(--text-4xl); }
+  .disc-grid, .disc-grid--2, .steps, .trust-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .disc-grid, .disc-grid--2, .steps, .trust-grid { grid-template-columns: 1fr; }
+  .section { padding: var(--space-12) 0; }
+  .hero h1 { font-size: var(--text-3xl); }
+  .cta-band { padding: var(--space-10) var(--space-5); }
+}
+
+/* Header helpers (V1) */
+.nav-link-plain { color: var(--color-text); font-weight: 500; font-size: var(--text-sm); padding: var(--space-2); }
+.nav-link-plain:hover { color: var(--color-primary); }
+.nav-secondary { color: var(--color-text-secondary); font-weight: 500; }
+.nav-secondary:hover { color: var(--color-primary); }
+.btn-ghost { background: transparent; color: var(--color-text-secondary); border: 1px solid transparent; }
+.btn-ghost:hover { background: var(--color-surface-2); color: var(--color-text); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Service / detail pages */
+.svc-detail { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-10); align-items: start; }
+.svc-image { height: 420px; border-radius: var(--radius-xl); background: linear-gradient(135deg, var(--evergreen) 0%, var(--evergreen-dark) 100%); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.85); }
+.svc-buy { position: sticky; top: var(--space-6); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: var(--shadow-md); }
+.svc-tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-4) 0; }
+.svc-price { font-size: var(--text-4xl); font-weight: 600; margin-bottom: var(--space-5); }
+.svc-section { margin-top: var(--space-12); max-width: 820px; }
+.svc-section h2 { font-size: var(--text-2xl); font-weight: 600; margin-bottom: var(--space-3); }
+.svc-section p { color: var(--color-text-secondary); font-size: var(--text-base); line-height: var(--leading-normal); }
+.svc-two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-10); }
+.svc-two .svc-section { margin-top: var(--space-12); }
+.svc-note { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-6); }
+.detail-hero { padding: var(--space-10) 0; border-bottom: 1px solid var(--color-border); margin-bottom: var(--space-8); }
+.detail-hero h1 { font-size: var(--text-4xl); font-weight: 600; }
+.demo-banner { background: var(--color-accent-bg); border: 1px solid transparent; color: #7E6836; border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-size: var(--text-sm); }
+@media (max-width: 900px) {
+  .svc-detail { grid-template-columns: 1fr; }
+  .svc-image { height: 260px; }
+  .svc-buy { position: static; }
+  .svc-two { grid-template-columns: 1fr; gap: 0; }
+  .svc-section .steps { grid-template-columns: 1fr 1fr !important; }
+}

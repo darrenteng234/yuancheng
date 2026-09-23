@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ThemeToggle } from "@/components/ui";
+import { Menu, LoaderCircle } from "lucide-react";
 import type { NavItem } from "./nav";
 
 /**
@@ -50,7 +50,7 @@ export function PortalShell({
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--color-bg)" }}>
         <div style={{ textAlign: "center", color: "var(--color-text-muted)" }}>
-          <div style={{ fontSize: "1.5rem", marginBottom: "var(--space-3)" }} aria-hidden>⛩️</div>
+          <LoaderCircle size={28} style={{ marginBottom: "var(--space-3)", animation: "spin 1s linear infinite" }} aria-hidden />
           <p>Verifying access…</p>
         </div>
       </div>
@@ -64,8 +64,8 @@ export function PortalShell({
         <ul className="admin-sidebar-nav">
           {nav.map((item) => (
             <li key={item.href}>
-              <Link href={item.href} className={active(item.href) ? "active" : ""}>
-                {item.icon ? <span aria-hidden style={{ marginRight: "var(--space-2)" }}>{item.icon}</span> : null}{item.label}
+              <Link href={item.href} className={active(item.href) ? "active" : ""} style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                {item.icon ? <item.icon size={17} aria-hidden /> : null}{item.label}
               </Link>
             </li>
           ))}
@@ -75,11 +75,10 @@ export function PortalShell({
         <header className="admin-header">
           <h1 style={{ fontSize: "var(--text-xl)", fontWeight: 700 }}>{current?.label ?? brand}</h1>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-            <ThemeToggle />
             {logoutHref ? <Link href={logoutHref} className="btn btn-secondary btn-sm">Logout</Link> : null}
           </div>
         </header>
-        <button className="sidebar-toggle" onClick={() => setOpen(!open)} aria-label="Toggle menu">☰</button>
+        <button className="sidebar-toggle" onClick={() => setOpen(!open)} aria-label="Toggle menu"><Menu size={20} /></button>
         <div className="admin-content">{children}</div>
       </div>
     </div>
