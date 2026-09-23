@@ -45,6 +45,13 @@ export interface Provider {
    */
   temple_id?: string;
   approved_at?: string;
+  // Canonical V1 additive fields (migration 01)
+  slug?: string;
+  description?: string;
+  country?: string;
+  city?: string;
+  address?: string;
+  storefront_status?: 'draft' | 'published' | 'paused';
   created_at: string;
   updated_at: string;
 }
@@ -105,6 +112,10 @@ export interface Sku {
   /** Only `published` SKUs count against plan.sku_limit (see lib/domain/plan). */
   status: SkuStatus;
   evidence_required?: string[];
+  // Canonical V1: a SKU may be a package under a service (migration 03)
+  service_id?: string;
+  tier?: 'basic' | 'standard' | 'premium' | 'custom';
+  includes?: string[];
   created_at: string;
   updated_at: string;
 }
@@ -171,6 +182,7 @@ export type OrderStatus =
   | 'draft'
   | 'pending_payment'
   | 'payment_failed'
+  | 'payment_proof_submitted'   // manual flow: customer uploaded proof, awaiting provider verify
   | 'paid'
   | 'accepted'
   | 'in_progress'
@@ -179,6 +191,8 @@ export type OrderStatus =
   | 'completed'
   | 'cancelled'
   | 'refunded'
+  | 'refund_requested'
+  | 'refund_confirmed'
   | 'disputed';
 
 export interface Order {
@@ -202,6 +216,18 @@ export interface Order {
   access_token?: string;
   accepted_at?: string;
   completed_at?: string;
+  // Canonical V1 additive (migration 05): request + immutable snapshots
+  service_id?: string;
+  package_id?: string;
+  place_id?: string;
+  customer_request?: string;
+  additional_note?: string;
+  customer_photo?: string;               // private storage path
+  service_snapshot?: Record<string, unknown>;
+  package_snapshot?: Record<string, unknown>;
+  place_snapshot?: Record<string, unknown>;
+  evidence_policy_snapshot?: EvidencePolicySnapshot;
+  payment_instruction_snapshot?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
   items?: OrderItem[];
@@ -255,9 +281,16 @@ export interface Payment {
   status: PaymentStatus;
   payout_status: PayoutStatus;
   stripe_payment_intent_id?: string;
+  // Canonical V1: generic processor abstraction (migration 04). Stage 1 = 'manual'.
+  processor?: PaymentProcessor;
+  processor_reference?: string;
+  platform_fee_rate?: number;
   created_at: string;
   updated_at: string;
 }
+
+/** Payment processor. Stage 1 is 'manual' (provider-direct). Others are future adapters. */
+export type PaymentProcessor = 'manual' | 'stripe' | 'xendit' | 'curlec';
 
 export interface Payout {
   id: string;
@@ -271,13 +304,26 @@ export interface Payout {
   created_at: string;
 }
 
+/**
+ * Refund (provider-direct model). Yuancheng RECORDS the refund; the provider
+ * returns the money directly. Yuancheng never claims to have refunded funds it
+ * did not hold.
+ */
+export type RefundStatus =
+  | 'requested' | 'approved' | 'provider_refunding' | 'confirmed' | 'rejected'
+  | 'pending' | 'succeeded' | 'failed';   // legacy values retained
 export interface Refund {
   id: string;
   order_id: string;
-  payment_id: string;
+  payment_id?: string;
   amount: number;
+  currency?: Currency;
   reason?: string;
-  status: 'pending' | 'succeeded' | 'failed';
+  status: RefundStatus;
+  requested_at?: string;
+  confirmed_at?: string;
+  confirmed_by?: string;
+  notes?: string;
   created_at: string;
 }
 
@@ -299,4 +345,170 @@ export interface PlatformDispute {
 export type Locale = 'en' | 'zh' | 'ms' | 'id' | 'th' | 'vi';
 
 // ── Actor / permissions ─────────────────────────────────────────────────────
-export type Role = 'admin' | 'provider_owner' | 'provider_staff' | 'fulfiller' | 'customer' | 'guest';
+/**
+ * Authorization roles. Canonical V1 names are `superadmin` and `provider_runner`;
+ * `admin` and `fulfiller` are retained as deprecated aliases so existing records
+ * and code keep working (see lib/domain/roles for normalization). superadmin =
+ * Yuancheng company administrator (distinct from provider_owner).
+ */
+export type Role =
+  | 'superadmin' | 'admin'          // admin = deprecated alias of superadmin
+  | 'provider_owner'
+  | 'provider_staff'
+  | 'provider_runner' | 'fulfiller' // fulfiller = deprecated alias of provider_runner
+  | 'customer'
+  | 'guest';
+
+// ============================================================================
+// Canonical V1 backend contract — additive entities
+// ============================================================================
+
+/** Structured provider verification (migration 02). */
+export type VerificationType = 'identity' | 'business' | 'physical_location';
+export type VerificationStatus = 'pending' | 'approved' | 'rejected' | 'expired';
+export interface ProviderVerification {
+  id: string;
+  provider_id: string;
+  verification_type: VerificationType;
+  status: VerificationStatus;
+  reference?: string;
+  notes?: string;
+  verified_by?: string;
+  verified_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Evidence configuration (frozen onto the order at purchase). */
+export type EvidenceType = 'none' | 'photo' | 'photo_and_video';
+export type EvidenceVisibility = 'automatic' | 'approval_required';
+export interface EvidencePolicySnapshot {
+  evidence_type: EvidenceType;
+  customer_visibility: EvidenceVisibility;
+}
+
+/** Service listing (migration 03) — one provider offering in one place/context. */
+export interface Service {
+  id: string;
+  provider_id: string;
+  storefront_id?: string;
+  place_id?: string;                 // nullable: future non-place services
+  name: string;
+  slug: string;
+  description?: string;
+  request_guidance?: string;
+  status: 'draft' | 'published' | 'paused' | 'archived';
+  customer_photo_required: boolean;
+  customer_photo_optional: boolean;
+  evidence_type: EvidenceType;
+  evidence_visibility: EvidenceVisibility;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Provider-controlled payment instructions (migration 04). */
+export type PaymentMethodType = 'bank_transfer' | 'duitnow_qr' | 'other';
+export interface ProviderPaymentMethod {
+  id: string;
+  provider_id: string;
+  type: PaymentMethodType;
+  country?: string;
+  currency?: Currency;
+  display_name: string;
+  bank_name?: string;
+  account_name?: string;
+  account_number?: string;
+  qr_asset?: string;                 // private storage path
+  instructions?: string;
+  active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Immutable snapshot of the instructions shown to the customer at order time. */
+export interface OrderPaymentInstruction {
+  id: string;
+  order_id: string;
+  payment_method_type?: PaymentMethodType;
+  display_name?: string;
+  bank_name?: string;
+  account_name?: string;
+  account_number?: string;
+  instructions?: string;
+  qr_reference?: string;
+  created_at: string;
+}
+
+/** Customer-uploaded proof of a direct payment. upload != paid. */
+export type PaymentProofStatus = 'submitted' | 'accepted' | 'rejected';
+export interface PaymentProof {
+  id: string;
+  order_id: string;
+  uploaded_by?: string;
+  storage_path: string;              // PRIVATE bucket path
+  file_type?: string;
+  status: PaymentProofStatus;
+  rejection_reason?: string;
+  verified_by?: string;
+  verified_at?: string;
+  created_at: string;
+}
+
+/** Append-only order audit event (migration 05). */
+export interface OrderEvent {
+  id: string;
+  order_id: string;
+  actor_user_id?: string;
+  actor_role?: Role;
+  event_type: string;
+  from_status?: OrderStatus;
+  to_status?: OrderStatus;
+  metadata?: Record<string, unknown>;
+  created_at: string;
+}
+
+/** Fulfillment task (migration 06). One order = one task in V1. */
+export type FulfillmentAssignmentType = 'provider' | 'staff' | 'runner' | 'external';
+export type FulfillmentTaskStatus = 'pending' | 'started' | 'completed' | 'cancelled';
+export interface FulfillmentTask {
+  id: string;
+  order_id: string;
+  provider_id: string;
+  assignment_type: FulfillmentAssignmentType;
+  assigned_user_id?: string;
+  external_fulfiller_name?: string;
+  status: FulfillmentTaskStatus;
+  started_at?: string;
+  completed_at?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Entitlements (migration 07). Capability-based, never plan-string checks. */
+export type EntitlementKey =
+  | 'service_limit' | 'package_limit' | 'product_limit' | 'location_limit'
+  | 'staff_limit' | 'runner_enabled' | 'evidence_enabled'
+  | 'analytics_level' | 'custom_branding';
+export interface PlanEntitlement {
+  id: string;
+  plan_id: string;
+  key: EntitlementKey;
+  limit_int?: number | null;
+  enabled: boolean;
+  value_text?: string | null;
+  created_at: string;
+}
+export interface ProviderEntitlement {
+  id: string;
+  provider_id: string;
+  key: EntitlementKey;
+  limit_int?: number | null;
+  enabled: boolean;
+  value_text?: string | null;
+  expires_at?: string;
+  note?: string;
+  created_at: string;
+  updated_at: string;
+}

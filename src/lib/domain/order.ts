@@ -13,40 +13,51 @@ export const FULFILLMENT_STATUSES: OrderStatus[] = [
 ];
 
 /** Pre-payment statuses — no fulfiller may touch these. */
-export const PRE_PAYMENT_STATUSES: OrderStatus[] = ['draft', 'pending_payment', 'payment_failed'];
+export const PRE_PAYMENT_STATUSES: OrderStatus[] = ['draft', 'pending_payment', 'payment_failed', 'payment_proof_submitted'];
 
 export const TERMINAL_STATUSES: OrderStatus[] = ['completed', 'cancelled', 'refunded'];
 
 /** Legal transitions: from → allowed next states. */
 const TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   draft: ['pending_payment', 'cancelled'],
-  pending_payment: ['paid', 'payment_failed', 'cancelled'],
-  payment_failed: ['pending_payment', 'cancelled'],
-  paid: ['accepted', 'cancelled', 'refunded'],
-  accepted: ['in_progress', 'cancelled', 'refunded'],
+  // Manual (Stage 1): customer uploads proof → provider verifies → paid.
+  pending_payment: ['payment_proof_submitted', 'paid', 'payment_failed', 'cancelled'],
+  payment_proof_submitted: ['paid', 'pending_payment', 'payment_failed', 'cancelled'],
+  payment_failed: ['pending_payment', 'payment_proof_submitted', 'cancelled'],
+  paid: ['accepted', 'cancelled', 'refund_requested', 'refunded'],
+  accepted: ['in_progress', 'cancelled', 'refund_requested', 'refunded'],
   in_progress: ['evidence_submitted', 'disputed', 'cancelled'],
-  evidence_submitted: ['under_review', 'in_progress'],
+  evidence_submitted: ['under_review', 'in_progress', 'completed'],
   under_review: ['completed', 'in_progress', 'disputed'],
-  completed: ['disputed', 'refunded'],
-  disputed: ['refunded', 'completed'],
+  completed: ['disputed', 'refund_requested', 'refunded'],
+  disputed: ['refunded', 'refund_requested', 'completed'],
+  refund_requested: ['refund_confirmed', 'cancelled', 'disputed'],
+  refund_confirmed: [],
   cancelled: [],
   refunded: [],
 };
 
 /** Who is allowed to move an order INTO a given status. */
+// Canonical roles + deprecated aliases both listed so old and new callers work
+// (superadmin≡admin, provider_runner≡fulfiller). See lib/domain/roles.
 const TRANSITION_ACTORS: Record<OrderStatus, Role[]> = {
   draft: ['customer', 'guest'],
   pending_payment: ['customer', 'guest'],
-  paid: [],                    // system-only (Stripe webhook)
-  payment_failed: [],          // system-only
-  accepted: ['admin', 'provider_owner', 'provider_staff', 'fulfiller'],
-  in_progress: ['admin', 'provider_owner', 'provider_staff', 'fulfiller'],
-  evidence_submitted: ['admin', 'provider_owner', 'provider_staff', 'fulfiller'],
-  under_review: ['admin', 'provider_owner', 'provider_staff'],
-  completed: ['admin', 'provider_owner'],
-  cancelled: ['admin', 'customer', 'guest'],
-  refunded: ['admin'],
-  disputed: ['admin', 'customer', 'guest'],
+  // Customer uploads proof of a direct payment.
+  payment_proof_submitted: ['customer', 'guest'],
+  // Stage 1: PROVIDER verifies the proof → paid. (Legacy Stripe webhook also sets paid, bypassing this map.)
+  paid: ['superadmin', 'admin', 'provider_owner', 'provider_staff'],
+  payment_failed: ['superadmin', 'admin', 'provider_owner', 'provider_staff'],
+  accepted: ['superadmin', 'admin', 'provider_owner', 'provider_staff', 'provider_runner', 'fulfiller'],
+  in_progress: ['superadmin', 'admin', 'provider_owner', 'provider_staff', 'provider_runner', 'fulfiller'],
+  evidence_submitted: ['superadmin', 'admin', 'provider_owner', 'provider_staff', 'provider_runner', 'fulfiller'],
+  under_review: ['superadmin', 'admin', 'provider_owner', 'provider_staff'],
+  completed: ['superadmin', 'admin', 'provider_owner'],
+  cancelled: ['superadmin', 'admin', 'customer', 'guest'],
+  refunded: ['superadmin', 'admin'],
+  refund_requested: ['superadmin', 'admin', 'customer', 'guest'],
+  refund_confirmed: ['superadmin', 'admin', 'provider_owner'],
+  disputed: ['superadmin', 'admin', 'customer', 'guest'],
 };
 
 export function canTransition(from: OrderStatus, to: OrderStatus): boolean {
@@ -80,7 +91,7 @@ export function checkTransition(from: OrderStatus, to: OrderStatus, actor: Role)
     return { ok: false, reason: `Role "${actor}" cannot move an order to "${to}"` };
   }
   // Belt-and-braces: fulfillment actors may never touch a pre-payment order.
-  if ((actor === 'fulfiller' || actor === 'provider_staff') && PRE_PAYMENT_STATUSES.includes(from)) {
+  if ((actor === 'fulfiller' || actor === 'provider_runner' || actor === 'provider_staff') && PRE_PAYMENT_STATUSES.includes(from)) {
     return { ok: false, reason: 'Unpaid orders cannot be fulfilled' };
   }
   return { ok: true };
