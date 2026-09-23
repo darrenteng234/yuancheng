@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { MapPin, ShieldCheck, Camera, Video, Store, CheckCircle2, Info } from "lucide-react";
 import { isLocale } from "@/lib/i18n";
 import type { Locale } from "@/types/platform";
-import { getService, getProvider, getPlace, money } from "@/lib/demo/catalog";
+import { getService, getProvider, getPlace, money, packagesByService } from "@/lib/demo/catalog";
+import { PackageCard } from "@/components/order/OrderParts";
 
 const EVIDENCE = {
   none: { en: "No evidence", zh: "无凭证" },
@@ -19,6 +20,8 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
   if (!s) notFound();
   const provider = getProvider(s.providerSlug);
   const place = getPlace(s.placeSlug);
+  const pkgs = packagesByService(s.slug);
+  const startPrice = pkgs.length ? Math.min(...pkgs.map((p) => p.price)) : s.price;
 
   const steps = zh
     ? [["下单", "您完成付款后订单创建。"], ["服务商接单", "服务商确认并接受订单。"], ["代办", "服务商代您执行服务。"], ["凭证", "完成时提交照片/视频（如适用）。"], ["完成", "订单标记为完成。"]]
@@ -46,9 +49,9 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
             <span className="tag">{s.evidence === "photo_video" ? <Video size={13} /> : s.evidence === "photo" ? <Camera size={13} /> : null} {EVIDENCE[s.evidence][zh ? "zh" : "en"]}</span>
             <span className="tag">{s.fulfilment}</span>
           </div>
-          <div className="svc-price">{money(s.price, s.currency)}</div>
-          <Link href={`/login?next=/${l}/services/${s.slug}`} className="btn btn-primary btn-lg btn-full">
-            {zh ? `下单 · ${money(s.price, s.currency)}` : `Continue · ${money(s.price, s.currency)}`}
+          <div className="svc-price">{pkgs.length ? (zh ? "起 " : "From ") : ""}{money(startPrice, s.currency)}</div>
+          <Link href={`/${l}/checkout?service=${s.slug}`} className="btn btn-primary btn-lg btn-full">
+            {zh ? "选择套餐" : "Choose a package"}
           </Link>
           <p style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", marginTop: "var(--space-3)", textAlign: "center" }}>
             {zh ? "结账使用 Stripe 测试模式（Beta）。" : "Checkout uses Stripe test mode (beta)."}
@@ -60,6 +63,18 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
       <section className="svc-section">
         <h2>{zh ? "关于此服务" : "About this service"}</h2>
         <p>{s.about[zh ? "zh" : "en"]}</p>
+      </section>
+
+      {/* Packages */}
+      <section className="svc-section">
+        <h2>{zh ? "套餐" : "Packages"}</h2>
+        <p style={{ marginBottom: "var(--space-5)" }}>{zh ? "每个套餐包含以下内容。" : "Each package includes the following."}</p>
+        <div className="disc-grid">
+          {pkgs.map((p) => (
+            <PackageCard key={p.id} name={p.name} price={money(p.price, p.currency)} locale={l}
+              includes={p.includes.map((i) => (zh ? i.zh : i.en))} />
+          ))}
+        </div>
       </section>
 
       {/* Fulfilment + Evidence */}
@@ -104,8 +119,8 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
       </section>
 
       <div style={{ marginTop: "var(--space-8)" }}>
-        <Link href={`/login?next=/${l}/services/${s.slug}`} className="btn btn-primary btn-lg">
-          <CheckCircle2 size={18} /> {zh ? `下单 · ${money(s.price, s.currency)}` : `Continue · ${money(s.price, s.currency)}`}
+        <Link href={`/${l}/checkout?service=${s.slug}`} className="btn btn-primary btn-lg">
+          <CheckCircle2 size={18} /> {zh ? "选择套餐" : "Choose a package"}
         </Link>
       </div>
     </div>

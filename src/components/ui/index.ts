@@ -13,3 +13,4 @@ export { Modal } from "./Modal";
 export type { ModalProps } from "./Modal";
 export { DataTable } from "./Table";
 export type { Column, DataTableProps } from "./Table";
+export { PageHeader, SectionHeader, OrderStatusBadge, VerificationBadge, EvidenceBadge, NotFoundState, UnauthorizedState, PlaceIndependenceNote } from "./extra";

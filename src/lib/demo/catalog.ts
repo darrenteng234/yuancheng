@@ -98,3 +98,65 @@ export const servicesByProvider = (slug: string) => DEMO_SERVICES.filter((s) => 
 export const servicesByPlace = (slug: string) => DEMO_SERVICES.filter((s) => s.placeSlug === slug);
 export const providersByPlace = (slug: string) => DEMO_PROVIDERS.filter((p) => p.placeSlug === slug);
 export const productsByProvider = (slug: string) => DEMO_PRODUCTS.filter((p) => p.providerSlug === slug);
+
+// ── Packages (customer-facing: Service → Package). "What's included" per price ──
+export interface DemoPackage {
+  id: string; serviceSlug: string; name: string; tier: string; price: number; currency: string;
+  includes: { en: string; zh: string }[];
+  evidence: "none" | "photo" | "photo_video";
+}
+export const DEMO_PACKAGES: DemoPackage[] = [
+  { id: "pk-offering-basic", serviceSlug: "temple-offering-service", name: "Basic", tier: "basic", price: 88, currency: "MYR", evidence: "photo",
+    includes: [{ en: "Standard offering set", zh: "标准供品套装" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo evidence", zh: "照片凭证" }] },
+  { id: "pk-offering-premium", serviceSlug: "temple-offering-service", name: "Premium", tier: "premium", price: 188, currency: "MYR", evidence: "photo_video",
+    includes: [{ en: "Larger offering set", zh: "加大供品套装" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo + video evidence", zh: "照片 + 视频凭证" }] },
+  { id: "pk-blessing-basic", serviceSlug: "blessing-service", name: "Standard", tier: "standard", price: 120, currency: "MYR", evidence: "photo",
+    includes: [{ en: "Blessing ceremony", zh: "祈福仪式" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo evidence", zh: "照片凭证" }] },
+  { id: "pk-ancestral-basic", serviceSlug: "ancestral-remembrance", name: "Standard", tier: "standard", price: 168, currency: "MYR", evidence: "photo_video",
+    includes: [{ en: "Remembrance service", zh: "追思服务" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo + video evidence", zh: "照片 + 视频凭证" }] },
+];
+export const packagesByService = (slug: string) => DEMO_PACKAGES.filter((p) => p.serviceSlug === slug);
+export const getPackage = (id: string) => DEMO_PACKAGES.find((p) => p.id === id);
+
+// ── Provider payment method (manual, provider-direct) ──────────────────────────
+export const DEMO_PAYMENT_METHOD = {
+  type: "duitnow_qr" as const,
+  display_name: "Golden Lotus Services — DuitNow",
+  bank_name: "Maybank",
+  account_name: "Golden Lotus Services Sdn Bhd",
+  account_number: "5141 2233 4455",
+  instructions: {
+    en: "Transfer the exact amount, then upload your receipt. The provider will verify your payment.",
+    zh: "请转账确切金额，然后上传收据。服务商将核实您的付款。",
+  },
+};
+
+// ── Demo orders (customer/provider/admin UI fixtures) ──────────────────────────
+export type DemoEvidence = { type: "photo" | "video"; url: string; label: string };
+export interface DemoOrder {
+  id: string; order_number: string; serviceSlug: string; packageId: string; providerSlug: string;
+  status: string; amount: number; currency: string; created_at: string;
+  customer_name: string; customer_request: string;
+  evidence: DemoEvidence[];
+}
+export const DEMO_ORDERS: DemoOrder[] = [
+  {
+    id: "ord-a", order_number: "YC-90001", serviceSlug: "temple-offering-service", packageId: "pk-offering-basic",
+    providerSlug: "golden-lotus-services", status: "payment_proof_submitted", amount: 88, currency: "MYR",
+    created_at: "2026-09-20", customer_name: "Demo Customer",
+    customer_request: "Please make an offering for the health and safety of my family.",
+    evidence: [],
+  },
+  {
+    id: "ord-b", order_number: "YC-90002", serviceSlug: "temple-offering-service", packageId: "pk-offering-premium",
+    providerSlug: "golden-lotus-services", status: "completed", amount: 188, currency: "MYR",
+    created_at: "2026-09-12", customer_name: "Demo Customer",
+    customer_request: "Offering with photo and video, in memory of my grandfather.",
+    evidence: [
+      { type: "photo", url: "https://picsum.photos/seed/yuancheng1/900/700", label: "Offering placed" },
+      { type: "photo", url: "https://picsum.photos/seed/yuancheng2/900/700", label: "At the altar" },
+      { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", label: "Ceremony clip" },
+    ],
+  },
+];
+export const getOrder = (id: string) => DEMO_ORDERS.find((o) => o.id === id || o.order_number === id);

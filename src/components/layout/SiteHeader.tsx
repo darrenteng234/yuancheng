@@ -36,7 +36,7 @@ export function SiteHeader({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
           ))}
         </nav>
         <div className="header-actions">
-          <Link href="/orders/track" className="nav-link-plain">{L.orders}</Link>
+          <Link href={`/${locale}/orders`} className="nav-link-plain">{L.orders}</Link>
           <Link href="/login" className="btn btn-primary btn-sm">{L.signin}</Link>
           {other ? (
             <Link href={`/${other}`} className="btn btn-ghost btn-sm" aria-label={LOCALE_LABELS[other]} style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
