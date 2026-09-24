@@ -34,8 +34,12 @@ export async function middleware(req: NextRequest) {
   }
 
   // Protect provider routes — must be signed in (provider-role checked in APIs).
-  // Provider login/apply pages are public.
+  // Provider login/apply pages are public. In DEMO mode (beta investor demo) the
+  // fixture-backed provider portal is viewable without a session; it exposes no
+  // real records and performs no writes.
+  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
   if (
+    !demoMode &&
     req.nextUrl.pathname.startsWith("/provider") &&
     !req.nextUrl.pathname.startsWith("/provider/login") &&
     !req.nextUrl.pathname.startsWith("/provider/apply")
