@@ -62,13 +62,19 @@ export function PortalShell({
       <aside className={`admin-sidebar${open ? "" : " collapsed"}`}>
         <div className="admin-sidebar-brand">{brand}</div>
         <ul className="admin-sidebar-nav">
-          {nav.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} className={active(item.href) ? "active" : ""} style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-                {item.icon ? <item.icon size={17} aria-hidden /> : null}{item.label}
-              </Link>
-            </li>
-          ))}
+          {nav.map((item, i) => {
+            const showGroup = item.group && item.group !== nav[i - 1]?.group;
+            return (
+              <React.Fragment key={item.href}>
+                {showGroup ? <li className="sidebar-group">{item.group}</li> : null}
+                <li>
+                  <Link href={item.href} className={active(item.href) ? "active" : ""} style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                    {item.icon ? <item.icon size={17} aria-hidden /> : null}{item.label}
+                  </Link>
+                </li>
+              </React.Fragment>
+            );
+          })}
         </ul>
       </aside>
       <div className="admin-main">

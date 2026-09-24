@@ -1,70 +1,68 @@
-"use client";
-import React from "react";
-import Link from "next/link";
-import { getMyProvider, updateProviderProfile } from "@/lib/platform-api";
-import { Card, Button, Input, Badge, StatusBadge, Alert, LoadingState, ErrorState, EmptyState } from "@/components/ui";
-import type { Provider, Plan } from "@/types/platform";
-import type { LimitCheck } from "@/lib/domain/plan";
+import { ShieldCheck, Landmark, QrCode, Plus } from "lucide-react";
+import { DEMO_PROVIDERS, DEMO_PAYMENT_METHOD } from "@/lib/demo/catalog";
+import { PageHeader } from "@/components/ui";
+
+const VERIFICATIONS = [
+  { type: "Identity", state: "Verified", tone: "success" },
+  { type: "Business", state: "Verified", tone: "success" },
+  { type: "Physical location", state: "Pending", tone: "warning" },
+];
 
 export default function ProviderAccount() {
-  const [state, setState] = React.useState<"loading" | "error" | "ready">("loading");
-  const [provider, setProvider] = React.useState<Provider | null>(null);
-  const [plan, setPlan] = React.useState<Plan | null>(null);
-  const [limit, setLimit] = React.useState<LimitCheck | null>(null);
-  const [form, setForm] = React.useState({ name: "", contact_email: "", contact_phone: "" });
-  const [busy, setBusy] = React.useState(false);
-  const [msg, setMsg] = React.useState<{ tone: "error" | "success"; text: string } | null>(null);
-
-  const load = React.useCallback(() => {
-    setState("loading");
-    getMyProvider().then((d) => {
-      setProvider(d.provider); setPlan(d.plan ?? null); setLimit(d.skuLimit ?? null);
-      if (d.provider) setForm({ name: d.provider.name, contact_email: d.provider.contact_email ?? "", contact_phone: d.provider.contact_phone ?? "" });
-      setState("ready");
-    }).catch(() => setState("error"));
-  }, []);
-  React.useEffect(() => { load(); }, [load]);
-
-  async function save(e: React.FormEvent) {
-    e.preventDefault(); if (!provider) return;
-    setBusy(true); setMsg(null);
-    try { await updateProviderProfile(provider.id, form); setMsg({ tone: "success", text: "Saved." }); load(); }
-    catch (err) { setMsg({ tone: "error", text: err instanceof Error ? err.message : "Save failed" }); }
-    finally { setBusy(false); }
-  }
-
+  const p = DEMO_PROVIDERS[0];
   return (
-    <div className="container" style={{ paddingTop: "var(--space-8)", paddingBottom: "var(--space-16)", maxWidth: 640 }}>
-      {state === "loading" ? <LoadingState /> :
-        state === "error" ? <ErrorState onRetry={load} /> :
-        !provider ? <EmptyState icon="🏮" title="No provider account" action={<Link href="/provider/apply"><Button>Apply</Button></Link>} /> :
-        <>
-          <h1 style={{ fontSize: "var(--text-2xl)", fontWeight: 700, marginBottom: "var(--space-2)" }}>Account & plan</h1>
-          <div style={{ display: "flex", gap: "var(--space-2)", marginBottom: "var(--space-5)" }}>
-            <StatusBadge status={provider.status} />
-            {plan ? <Badge tone="amber">{plan.name} plan</Badge> : null}
-            {limit ? <Badge tone="gray">SKUs {limit.used}{limit.limit === null ? "" : `/${limit.limit}`}</Badge> : null}
+    <div style={{ padding: "var(--space-6)", maxWidth: 760, margin: "0 auto" }}>
+      <PageHeader title="Account" subtitle="Business details, verification and how customers pay you." />
+
+      <div className="acct-section">
+        <h2>Business information</h2>
+        <dl className="pay-method-grid">
+          <div><dt>Business name</dt><dd>{p.name}</dd></div>
+          <div><dt>Location</dt><dd>{p.location}, Malaysia</dd></div>
+        </dl>
+      </div>
+
+      <div className="acct-section">
+        <h2>Verification</h2>
+        {VERIFICATIONS.map((v) => (
+          <div key={v.type} className="capacity-row">
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              {v.tone === "success" ? <ShieldCheck size={16} style={{ color: "var(--color-success)" }} /> : null}{v.type}
+            </span>
+            <span className={`sbadge sbadge--${v.tone}`}>{v.state}</span>
           </div>
-          {msg ? <Alert tone={msg.tone} style={{ marginBottom: "var(--space-4)" }}>{msg.text}</Alert> : null}
-          <Card>
-            <form onSubmit={save}>
-              <Input label="Provider name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-              <Input label="Contact email" type="email" value={form.contact_email} onChange={(e) => setForm({ ...form, contact_email: e.target.value })} />
-              <Input label="Contact phone" value={form.contact_phone} onChange={(e) => setForm({ ...form, contact_phone: e.target.value })} />
-              <Button type="submit" loading={busy} style={{ marginTop: "var(--space-2)" }}>Save changes</Button>
-            </form>
-          </Card>
-          {plan ? (
-            <Card style={{ marginTop: "var(--space-4)" }}>
-              <h3 style={{ fontWeight: 600, marginBottom: "var(--space-2)" }}>Plan limits</h3>
-              <div className="text-sm text-muted">
-                Active SKUs: {plan.sku_limit ?? "unlimited"} · Storefronts: {plan.storefront_limit ?? "unlimited"}
-                {plan.monthly_price != null ? ` · ${plan.currency} ${plan.monthly_price}/mo` : " · pricing TBD"}
-              </div>
-            </Card>
-          ) : null}
-        </>
-      }
+        ))}
+        <p className="text-muted" style={{ fontSize: "var(--text-xs)", marginTop: "var(--space-3)" }}>
+          Verified provider. Verification confirms identity and business — it is not an endorsement by any place, and Yuancheng does not guarantee outcomes.
+        </p>
+      </div>
+
+      <div className="acct-section">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2 style={{ marginBottom: 0 }}>Payment methods</h2>
+          <button className="btn btn-secondary btn-sm" disabled><Plus size={14} /> Add method</button>
+        </div>
+        <p className="text-muted" style={{ fontSize: "var(--text-sm)", margin: "var(--space-3) 0 var(--space-4)" }}>
+          How customers pay you directly (Stage 1). This is your account — not a Yuancheng payout account.
+        </p>
+        <div className="pay-method" style={{ marginBottom: "var(--space-3)" }}>
+          <div className="pay-method-head"><Landmark size={18} /> {DEMO_PAYMENT_METHOD.bank_name}</div>
+          <dl className="pay-method-grid">
+            <div><dt>Account name</dt><dd>{DEMO_PAYMENT_METHOD.account_name}</dd></div>
+            <div><dt>Account number</dt><dd>{DEMO_PAYMENT_METHOD.account_number}</dd></div>
+          </dl>
+        </div>
+        <div className="pay-method">
+          <div className="pay-method-head"><QrCode size={18} /> DuitNow QR</div>
+          <p className="text-muted" style={{ fontSize: "var(--text-sm)" }}>{DEMO_PAYMENT_METHOD.display_name}</p>
+        </div>
+      </div>
+
+      <div className="acct-section">
+        <h2>Security</h2>
+        <div className="capacity-row"><span>Email</span><span className="text-muted">sales.provider@yuancheng.demo</span></div>
+        <div className="capacity-row"><span>Password</span><button className="disc-card-cta" disabled style={{ background: "none" }}>Change</button></div>
+      </div>
     </div>
   );
 }
