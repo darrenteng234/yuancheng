@@ -2,7 +2,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard, Store, Package, CreditCard, FileText, TrendingUp, Settings,
-  ClipboardList, Navigation, User,
+  ClipboardList, Navigation, User, Sparkles,
 } from "lucide-react";
 
 export interface NavItem { href: string; label: string; icon?: LucideIcon; }
@@ -20,7 +20,8 @@ export const ADMIN_NAV: NavItem[] = [
 export const PROVIDER_NAV: NavItem[] = [
   { href: "/provider", label: "Dashboard", icon: LayoutDashboard },
   { href: "/provider/storefront", label: "Storefront", icon: Store },
-  { href: "/provider/products", label: "Products & SKUs", icon: Package },
+  { href: "/provider/services", label: "Services", icon: Sparkles },
+  { href: "/provider/products", label: "Products", icon: Package },
   { href: "/provider/orders", label: "Orders", icon: ClipboardList },
   { href: "/provider/account", label: "Account", icon: Settings },
 ];

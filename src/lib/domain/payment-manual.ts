@@ -3,7 +3,8 @@
  * hold, or refund money. Flow:
  *   pending_payment → (customer uploads proof) → payment_proof_submitted
  *                   → (provider verifies) accepted → PAID
- *                   → (provider rejects)   rejected → back to pending_payment
+ *                   → (provider rejects)   rejected → payment_failed
+ *                     (customer then re-uploads a new proof)
  *
  * Rule: uploading a proof NEVER marks an order paid. Only provider verification
  * of an accepted proof advances the order to paid.
@@ -17,9 +18,10 @@ export function canSubmitProof(orderStatus: OrderStatus): boolean {
     || orderStatus === 'payment_proof_submitted';
 }
 
-/** Where a proof decision moves the ORDER. accepted → paid; rejected → pending_payment. */
+/** Where a proof decision moves the ORDER. accepted → paid; rejected → payment_failed
+ *  (a provider can legally set payment_failed; the customer then re-uploads). */
 export function orderStatusAfterProofDecision(decision: Extract<PaymentProofStatus, 'accepted' | 'rejected'>): OrderStatus {
-  return decision === 'accepted' ? 'paid' : 'pending_payment';
+  return decision === 'accepted' ? 'paid' : 'payment_failed';
 }
 
 /** Only a provider manager/superadmin verifies; customers never self-verify. */

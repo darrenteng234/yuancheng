@@ -26,7 +26,7 @@ const TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   payment_failed: ['pending_payment', 'payment_proof_submitted', 'cancelled'],
   paid: ['accepted', 'cancelled', 'refund_requested', 'refunded'],
   accepted: ['in_progress', 'cancelled', 'refund_requested', 'refunded'],
-  in_progress: ['evidence_submitted', 'disputed', 'cancelled'],
+  in_progress: ['evidence_submitted', 'disputed', 'cancelled', 'refund_requested'],
   evidence_submitted: ['under_review', 'in_progress', 'completed'],
   under_review: ['completed', 'in_progress', 'disputed'],
   completed: ['disputed', 'refund_requested', 'refunded'],
@@ -55,7 +55,8 @@ const TRANSITION_ACTORS: Record<OrderStatus, Role[]> = {
   completed: ['superadmin', 'admin', 'provider_owner'],
   cancelled: ['superadmin', 'admin', 'customer', 'guest'],
   refunded: ['superadmin', 'admin'],
-  refund_requested: ['superadmin', 'admin', 'customer', 'guest'],
+  // Provider-direct model (§20): a provider who cannot fulfil starts the refund.
+  refund_requested: ['superadmin', 'admin', 'provider_owner', 'provider_staff', 'customer', 'guest'],
   refund_confirmed: ['superadmin', 'admin', 'provider_owner'],
   disputed: ['superadmin', 'admin', 'customer', 'guest'],
 };
@@ -95,4 +96,33 @@ export function checkTransition(from: OrderStatus, to: OrderStatus, actor: Role)
     return { ok: false, reason: 'Unpaid orders cannot be fulfilled' };
   }
   return { ok: true };
+}
+
+/**
+ * The ONE main next action (plus at most one danger action) for a status+role.
+ * Replaces the banned "button per legal transition" pattern: callers render the
+ * first as the primary button and any danger action as a secondary. Every entry
+ * is filtered through checkTransition, so a button is never shown for an illegal
+ * or unauthorized move.
+ */
+export type ActionKind = 'primary' | 'danger';
+export interface OrderAction { to: OrderStatus; label: string; kind: ActionKind; }
+
+const NEXT: Partial<Record<OrderStatus, OrderAction[]>> = {
+  pending_payment:         [{ to: 'payment_proof_submitted', label: 'Upload payment proof', kind: 'primary' }],
+  payment_proof_submitted: [{ to: 'paid', label: 'Verify payment', kind: 'primary' }, { to: 'payment_failed', label: 'Reject proof', kind: 'danger' }],
+  paid:                    [{ to: 'accepted', label: 'Accept order', kind: 'primary' }, { to: 'refund_requested', label: 'Cancel order', kind: 'danger' }],
+  accepted:                [{ to: 'in_progress', label: 'Start fulfilment', kind: 'primary' }, { to: 'refund_requested', label: 'Cancel order', kind: 'danger' }],
+  in_progress:             [{ to: 'evidence_submitted', label: 'Submit evidence', kind: 'primary' }, { to: 'refund_requested', label: 'Cancel order', kind: 'danger' }],
+  evidence_submitted:      [{ to: 'completed', label: 'Complete order', kind: 'primary' }],
+  under_review:            [{ to: 'completed', label: 'Complete order', kind: 'primary' }],
+  refund_requested:        [{ to: 'refund_confirmed', label: 'Confirm refund', kind: 'primary' }],
+};
+
+/** Legal, authorized next actions for this actor — primary first, danger last. */
+export function orderActions(status: OrderStatus, role: Role): OrderAction[] {
+  return (NEXT[status] ?? []).filter((a) => checkTransition(status, a.to, role).ok);
+}
+export function primaryAction(status: OrderStatus, role: Role): OrderAction | null {
+  return orderActions(status, role).find((a) => a.kind === 'primary') ?? null;
 }

@@ -34,9 +34,14 @@ export async function middleware(req: NextRequest) {
   }
 
   // Protect provider routes — must be signed in (provider-role checked in APIs).
-  if (req.nextUrl.pathname.startsWith("/provider")) {
+  // Provider login/apply pages are public.
+  if (
+    req.nextUrl.pathname.startsWith("/provider") &&
+    !req.nextUrl.pathname.startsWith("/provider/login") &&
+    !req.nextUrl.pathname.startsWith("/provider/apply")
+  ) {
     if (!session) {
-      const redirectUrl = new URL("/login", req.url);
+      const redirectUrl = new URL("/provider/login", req.url);
       redirectUrl.searchParams.set("redirect", req.nextUrl.pathname);
       return NextResponse.redirect(redirectUrl);
     }

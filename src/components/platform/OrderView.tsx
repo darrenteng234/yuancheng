@@ -1,17 +1,8 @@
 "use client";
 import React from "react";
 import { Card, Button, StatusBadge, Badge, Alert } from "@/components/ui";
-import { checkTransition } from "@/lib/domain/order";
+import { orderActions } from "@/lib/domain/order";
 import type { Order, OrderStatus, Role } from "@/types/platform";
-
-const ALL_STATUSES: OrderStatus[] = [
-  "accepted", "in_progress", "evidence_submitted", "under_review", "completed", "cancelled", "disputed", "refunded",
-];
-const LABEL: Record<string, string> = {
-  accepted: "Accept", in_progress: "Start work", evidence_submitted: "Mark evidence submitted",
-  under_review: "Send to review", completed: "Mark completed", cancelled: "Cancel",
-  disputed: "Flag dispute", refunded: "Refund",
-};
 
 type EvidenceItem = { id?: string; type: string; url: string; label?: string };
 
@@ -25,8 +16,8 @@ export function OrderView({
   onSubmitEvidence?: (items: EvidenceItem[]) => void;
   busy?: boolean;
 }) {
-  // Actions available now = legal transitions for this role from current status.
-  const actions = ALL_STATUSES.filter((to) => checkTransition(order.status, to, role).ok);
+  // ONE primary next action (+ at most one danger action). No status dropdown.
+  const actions = orderActions(order.status, role);
   const canDoEvidence = onSubmitEvidence && role !== "customer" && role !== "guest" &&
     (order.status === "in_progress" || order.status === "accepted");
 
@@ -83,11 +74,11 @@ export function OrderView({
         <Card>
           <h3 style={{ fontWeight: 600, marginBottom: "var(--space-3)" }}>Actions</h3>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-2)" }}>
-            {actions.map((to) => (
-              <Button key={to} size="sm" loading={busy}
-                variant={to === "completed" ? "success" : to === "cancelled" || to === "refunded" || to === "disputed" ? "secondary" : "primary"}
-                onClick={() => onTransition(to)}>
-                {LABEL[to] ?? to}
+            {actions.map((a) => (
+              <Button key={a.to} size="sm" loading={busy}
+                variant={a.kind === "danger" ? "secondary" : "primary"}
+                onClick={() => onTransition(a.to)}>
+                {a.label}
               </Button>
             ))}
           </div>

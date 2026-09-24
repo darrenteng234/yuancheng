@@ -719,3 +719,15 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .form-input { width: 100%; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: var(--text-base); background: var(--color-surface); color: var(--color-text); }
 .form-input:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--focus-ring); }
 @media (max-width: 900px) { .order-detail-grid { grid-template-columns: 1fr !important; } }
+
+/* Provider order detail bits */
+.proof-receipt { display: inline-flex; align-items: center; gap: 8px; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-2); font-size: var(--text-sm); color: var(--color-text-secondary); }
+.needs-attention { display: grid; gap: var(--space-3); }
+.na-item { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4) var(--space-5); border: 1px solid var(--color-border); border-left: 3px solid var(--color-warning); border-radius: var(--radius-md); background: var(--color-surface); }
+.na-item .na-count { font-size: var(--text-2xl); font-weight: 700; color: var(--color-text); }
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-4); }
+.metric-card { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5); background: var(--color-surface); }
+.metric-card .m-val { font-size: var(--text-3xl); font-weight: 700; }
+.metric-card .m-label { color: var(--color-text-secondary); font-size: var(--text-sm); margin-top: 2px; }
+.capacity-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border); }
+.capacity-row:last-child { border-bottom: none; }

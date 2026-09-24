@@ -1,6 +1,6 @@
 /* Canonical V1 backend logic — deterministic checks for the new domain modules.
  * Run: npx tsx scripts/canonical-smoke.ts */
-import { checkTransition } from '../src/lib/domain/order';
+import { checkTransition, orderActions, primaryAction } from '../src/lib/domain/order';
 import { normalizeRole, roleEquals, isProviderRole } from '../src/lib/domain/roles';
 import { resolveEntitlements, checkCapacity, canUseRunner } from '../src/lib/domain/entitlements';
 import { canSubmitProof, orderStatusAfterProofDecision, isVerifiableBy } from '../src/lib/domain/payment-manual';
@@ -36,7 +36,7 @@ console.log('PAYMENT-MANUAL rules');
 ok('can submit proof while pending', canSubmitProof('pending_payment'));
 ok('cannot submit proof once paid', !canSubmitProof('paid'));
 ok('accepted proof → paid', orderStatusAfterProofDecision('accepted') === 'paid');
-ok('rejected proof → pending', orderStatusAfterProofDecision('rejected') === 'pending_payment');
+ok('rejected proof → payment_failed', orderStatusAfterProofDecision('rejected') === 'payment_failed');
 ok('provider verifies, customer does not', isVerifiableBy('provider_owner') && !isVerifiableBy('customer'));
 
 console.log('ENTITLEMENTS — capability, not plan strings');
@@ -72,6 +72,23 @@ ok('external assignment needs a name', !validateAssignment('external', {}).ok);
 ok('provider assignment ok with nothing', validateAssignment('provider', {}).ok);
 ok('task pending → started', canTaskTransition('pending', 'started'));
 ok('task cannot pending → completed', !canTaskTransition('pending', 'completed'));
+
+console.log('PROVIDER REFUND + PROOF REJECT (Phase 4A fixes)');
+ok('provider CAN start refund from paid', checkTransition('paid', 'refund_requested', 'provider_owner').ok);
+ok('provider CAN start refund from accepted', checkTransition('accepted', 'refund_requested', 'provider_owner').ok);
+ok('provider CAN start refund from in_progress', checkTransition('in_progress', 'refund_requested', 'provider_owner').ok);
+ok('reject proof lands on payment_failed (provider-legal)', orderStatusAfterProofDecision('rejected') === 'payment_failed');
+ok('provider CAN set payment_failed (reject)', checkTransition('payment_proof_submitted', 'payment_failed', 'provider_owner').ok);
+ok('customer re-uploads after failure', checkTransition('payment_failed', 'payment_proof_submitted', 'customer').ok);
+
+console.log('SINGLE-ACTION UI (no status dropdown)');
+ok('proof_submitted → one primary (Verify payment)', primaryAction('payment_proof_submitted', 'provider_owner')?.to === 'paid');
+ok('proof_submitted shows a danger (Reject proof)', orderActions('payment_proof_submitted', 'provider_owner').some((a) => a.kind === 'danger' && a.to === 'payment_failed'));
+ok('paid → primary Accept order', primaryAction('paid', 'provider_owner')?.to === 'accepted');
+ok('paid → danger Cancel (refund_requested)', orderActions('paid', 'provider_owner').some((a) => a.to === 'refund_requested'));
+ok('exactly one primary per state', orderActions('accepted', 'provider_owner').filter((a) => a.kind === 'primary').length === 1);
+ok('completed has no actions', orderActions('completed', 'provider_owner').length === 0);
+ok('customer CANNOT accept a paid order (provider-only)', !orderActions('paid', 'customer').some((a) => a.to === 'accepted'));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

@@ -6,7 +6,7 @@ import { PROVIDER_NAV } from "@/components/layout/nav";
 // bypasses /provider/apply so a not-yet-provider can still apply.
 export default function ProviderLayout({ children }: { children: React.ReactNode }) {
   return (
-    <PortalShell brand="🏮 Yuancheng Provider" nav={PROVIDER_NAV}>
+    <PortalShell brand="Yuancheng Provider" nav={PROVIDER_NAV}>
       {children}
     </PortalShell>
   );

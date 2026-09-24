@@ -4,6 +4,7 @@
  * of live DB rows. All entities are clearly marked demo. This is display data
  * only — real orders/payments always go through the DB + domain logic.
  */
+import type { OrderStatus } from "@/types/platform";
 
 export interface DemoService {
   slug: string; name: string; providerSlug: string; placeSlug: string;
@@ -135,8 +136,8 @@ export const DEMO_PAYMENT_METHOD = {
 export type DemoEvidence = { type: "photo" | "video"; url: string; label: string };
 export interface DemoOrder {
   id: string; order_number: string; serviceSlug: string; packageId: string; providerSlug: string;
-  status: string; amount: number; currency: string; created_at: string;
-  customer_name: string; customer_request: string;
+  status: OrderStatus; amount: number; currency: string; created_at: string;
+  customer_name: string; customer_request: string; customer_location?: string;
   evidence: DemoEvidence[];
 }
 export const DEMO_ORDERS: DemoOrder[] = [
