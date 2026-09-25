@@ -6,7 +6,7 @@ import { ArrowLeft, Receipt, ShieldCheck, UserCog, X, ZoomIn } from "lucide-reac
 import type { OrderStatus } from "@/types/platform";
 import { orderActions } from "@/lib/domain/order";
 import { statusLabel, statusTone } from "@/lib/status";
-import { formatMoney, formatDateTime } from "@/lib/format";
+import { formatMoney, formatDate, formatDateTime } from "@/lib/format";
 import { getOrder, getService, getPackage, getPlace, DEMO_PAYMENT_METHOD } from "@/lib/demo/catalog";
 import { Timeline, EvidenceGallery, PaymentMethodCard, type TimelineStep } from "@/components/order/OrderParts";
 import { NotFoundState } from "@/components/ui";
@@ -62,17 +62,136 @@ export default function ProviderOrderDetail() {
     }
     setStatus(to);
   }
-  function confirmDialog(to: OrderStatus) {
-    if (!reason.trim()) return;
-    setStatus(to); setDialog(null); setReason("");
+  function openDanger() { if (danger) setDialog(danger.to === "payment_failed" ? "reject" : "cantfulfil"); }
+  function confirmDialog(to: OrderStatus) { if (!reason.trim()) return; setStatus(to); setDialog(null); setReason(""); }
+
+  // ── Section blocks ─────────────────────────────────────────────────────────
+  const PrimaryBtn = () => primary ? (
+    <button className="btn btn-primary btn-full action-inline-primary" onClick={() => runPrimary(primary.to)}>{primary.label}</button>
+  ) : null;
+  const DangerText = () => danger ? (
+    <button className="btn-textlink-danger" onClick={openDanger}>{danger.label}</button>
+  ) : null;
+
+  const paymentReviewCard = (
+    <section className="checkout-step decision-card" key="paymentReview">
+      <h2><Receipt size={18} /> Payment review</h2>
+      <div className="banner-review" style={{ marginBottom: "var(--space-4)" }}>
+        A receipt upload does not mean payment is verified. Check your bank before verifying.
+      </div>
+      <div className="receipt-row">
+        <button className="receipt-thumb" onClick={() => setReceiptOpen(true)} aria-label="Open receipt">
+          <img src="/demo/receipt-ord-a.svg" alt="Payment receipt thumbnail" />
+          <span className="receipt-thumb-zoom"><ZoomIn size={16} /></span>
+        </button>
+        <dl className="pay-method-grid" style={{ flex: 1 }}>
+          <div><dt>Amount due</dt><dd>{money}</dd></div>
+          <div><dt>Reference</dt><dd>{base.order_number}</dd></div>
+          <div><dt>Uploaded</dt><dd>{formatDateTime(base.created_at + "T10:32:00")}</dd></div>
+          <div><dt>Method</dt><dd>{DEMO_PAYMENT_METHOD.bank_name}</dd></div>
+        </dl>
+      </div>
+      <p className="text-muted" style={{ fontSize: "var(--text-sm)", margin: "var(--space-3) 0 var(--space-4)" }}>
+        Check in your bank app: amount {money}, reference {base.order_number}.
+      </p>
+      <PrimaryBtn />
+      <div style={{ marginTop: "var(--space-3)", textAlign: "center" }}><DangerText /></div>
+    </section>
+  );
+
+  const nextActionCard = (
+    <section className="checkout-step decision-card" key="nextAction">
+      <h2>Next action</h2>
+      <PrimaryBtn />
+      {danger ? <div style={{ marginTop: "var(--space-4)", paddingTop: "var(--space-3)", borderTop: "1px solid var(--color-border)", textAlign: "center" }}><DangerText /></div> : null}
+    </section>
+  );
+
+  const evidenceActionCard = (
+    <section className="checkout-step decision-card" key="evidenceAction">
+      <h2>Submit completion evidence</h2>
+      <p className="text-muted" style={{ fontSize: "var(--text-sm)", marginBottom: "var(--space-4)" }}>
+        Required: {pkg?.evidence === "photo_video" ? "Photo + video" : pkg?.evidence === "photo" ? "Photo" : "None"}. Add your records, then submit.
+      </p>
+      <div style={{ display: "flex", gap: "var(--space-2)", marginBottom: "var(--space-4)", flexWrap: "wrap" }}>
+        <button className="btn btn-secondary btn-sm" onClick={() => setEvidence((e) => [...e, { type: "photo", url: "https://picsum.photos/seed/prov" + e.length + "/800/600", label: "Photo" }])}>Add photo</button>
+        <button className="btn btn-secondary btn-sm" onClick={() => setEvidence((e) => [...e, { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", label: "Video" }])}>Add video</button>
+      </div>
+      {evidence.length ? <div style={{ marginBottom: "var(--space-4)" }}><EvidenceGallery items={evidence} disclaimer={false} /></div> : null}
+      <PrimaryBtn />
+      {danger ? <div style={{ marginTop: "var(--space-3)", textAlign: "center" }}><DangerText /></div> : null}
+    </section>
+  );
+
+  const statusSummaryCard = (
+    <section className="checkout-step decision-card" key="statusSummary">
+      <h2>{statusLabel(status)}</h2>
+      {primary ? <PrimaryBtn /> : <p className="text-muted" style={{ fontSize: "var(--text-sm)" }}>No further action needed.</p>}
+    </section>
+  );
+
+  const requestBlock = (
+    <section className="checkout-step" key="request"><h2>Customer request</h2><p style={{ color: "var(--color-text-secondary)" }}>{base.customer_request}</p></section>
+  );
+  const packageBlock = (
+    <section className="checkout-step" key="package"><h2>Package</h2>
+      <dl className="pay-method-grid">
+        <div><dt>Package</dt><dd>{pkg?.name}</dd></div>
+        <div><dt>Amount</dt><dd>{money}</dd></div>
+        {place ? <div><dt>Place</dt><dd>{place.name}</dd></div> : null}
+        <div><dt>Fulfilment</dt><dd>Provider</dd></div>
+      </dl>
+    </section>
+  );
+  const fulfilmentBlock = (
+    <section className="checkout-step" key="fulfilment"><h2><UserCog size={18} /> Fulfilment</h2>
+      <dl className="pay-method-grid">
+        <div><dt>Assignment</dt><dd>Provider</dd></div>
+        <div><dt>Evidence required</dt><dd>{pkg?.evidence === "photo_video" ? "Photo + video" : pkg?.evidence === "photo" ? "Photo" : "None"}</dd></div>
+      </dl>
+    </section>
+  );
+  const progressBlock = (
+    <section className="checkout-step" key="progress"><h2>Progress</h2><Timeline steps={timeline(status)} /></section>
+  );
+  const paymentFullBlock = (
+    <section className="checkout-step" key="paymentFull"><h2>Payment details</h2><PaymentMethodCard method={DEMO_PAYMENT_METHOD} /></section>
+  );
+  const paymentCollapsedBlock = (
+    <section className="checkout-step" key="paymentCollapsed">
+      <h2>Payment</h2>
+      <div className="sbadge sbadge--success"><ShieldCheck size={14} /> Verified · {money} · {formatDate(base.created_at)}</div>
+    </section>
+  );
+  const evidenceBlock = (
+    <section className="checkout-step" key="evidence"><h2>Completion evidence</h2><EvidenceGallery items={evidence} /></section>
+  );
+
+  // ── Section order per status ───────────────────────────────────────────────
+  let blocks: React.ReactNode[];
+  if (status === "payment_proof_submitted") {
+    blocks = [paymentReviewCard, requestBlock, packageBlock, progressBlock, paymentFullBlock];
+  } else if (status === "payment_failed") {
+    blocks = [
+      <section className="checkout-step decision-card" key="failed"><h2>Payment issue</h2>
+        <div className="banner-review" style={{ background: "var(--color-error-bg)", color: "var(--color-error)" }}>Receipt rejected. The customer can upload a new receipt.</div>
+      </section>,
+      requestBlock, packageBlock, progressBlock, paymentFullBlock,
+    ];
+  } else if (status === "paid" || status === "accepted") {
+    blocks = [nextActionCard, requestBlock, packageBlock, fulfilmentBlock, progressBlock, paymentCollapsedBlock];
+  } else if (status === "in_progress") {
+    blocks = [evidenceActionCard, requestBlock, fulfilmentBlock, progressBlock, paymentCollapsedBlock];
+  } else {
+    // evidence_submitted / completed / refund_requested / refund_confirmed
+    blocks = [statusSummaryCard, evidenceBlock, progressBlock, requestBlock, packageBlock, fulfilmentBlock, paymentCollapsedBlock];
   }
 
   return (
-    <div style={{ padding: "var(--space-6)", maxWidth: 940, margin: "0 auto", paddingBottom: "96px" }}>
+    <div style={{ padding: "var(--space-6)", maxWidth: 720, margin: "0 auto", paddingBottom: "96px" }}>
       <Link href="/provider/orders" className="nav-link-plain" style={{ display: "inline-flex", alignItems: "center", gap: 4, marginBottom: "var(--space-4)" }}>
         <ArrowLeft size={15} /> Orders
       </Link>
-
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "var(--space-3)", marginBottom: "var(--space-5)" }}>
         <div>
           <div className="order-row-num">{base.order_number}</div>
@@ -82,87 +201,7 @@ export default function ProviderOrderDetail() {
         <span className={`sbadge sbadge--${statusTone(status)}`}>{statusLabel(status)}</span>
       </div>
 
-      <div className="order-detail-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "var(--space-6)", alignItems: "start" }}>
-        <div>
-          <div className="checkout-step">
-            <h2>Customer request</h2>
-            <p style={{ color: "var(--color-text-secondary)" }}>{base.customer_request}</p>
-          </div>
-
-          <div className="checkout-step">
-            <h2>Package</h2>
-            <dl className="pay-method-grid">
-              <div><dt>Package</dt><dd>{pkg?.name}</dd></div>
-              <div><dt>Amount</dt><dd>{money}</dd></div>
-              {place ? <div><dt>Place</dt><dd>{place.name}</dd></div> : null}
-              <div><dt>Fulfilment</dt><dd>Provider</dd></div>
-            </dl>
-          </div>
-
-          {/* Payment */}
-          <div className="checkout-step">
-            <h2><Receipt size={18} /> Payment</h2>
-            {status === "payment_proof_submitted" ? (
-              <>
-                <div className="banner-review" style={{ marginBottom: "var(--space-4)" }}>
-                  Payment proof submitted — awaiting your verification. A receipt upload does not mean payment is verified.
-                </div>
-                <div className="receipt-row">
-                  <button className="receipt-thumb" onClick={() => setReceiptOpen(true)} aria-label="Open receipt">
-                    <img src="/demo/receipt-ord-a.svg" alt="Payment receipt thumbnail" />
-                    <span className="receipt-thumb-zoom"><ZoomIn size={16} /></span>
-                  </button>
-                  <dl className="pay-method-grid" style={{ flex: 1 }}>
-                    <div><dt>Amount due</dt><dd>{money}</dd></div>
-                    <div><dt>Uploaded</dt><dd>{formatDateTime(base.created_at + "T10:32:00")}</dd></div>
-                    <div><dt>Method</dt><dd>{DEMO_PAYMENT_METHOD.bank_name}</dd></div>
-                    <div><dt>Reference</dt><dd>{base.order_number}</dd></div>
-                  </dl>
-                </div>
-                <p className="text-muted" style={{ fontSize: "var(--text-sm)", marginTop: "var(--space-3)" }}>
-                  Check in your bank app: amount {money}, reference {base.order_number}.
-                </p>
-              </>
-            ) : status === "payment_failed" ? (
-              <div className="banner-review" style={{ background: "var(--color-error-bg)", color: "var(--color-error)" }}>Receipt rejected. The customer can upload a new receipt.</div>
-            ) : (
-              <div className="sbadge sbadge--success" style={{ marginBottom: "var(--space-4)" }}><ShieldCheck size={14} /> Payment verified</div>
-            )}
-            <div style={{ marginTop: "var(--space-4)" }}><PaymentMethodCard method={DEMO_PAYMENT_METHOD} /></div>
-          </div>
-
-          <div className="checkout-step">
-            <h2><UserCog size={18} /> Fulfilment</h2>
-            <dl className="pay-method-grid">
-              <div><dt>Assignment</dt><dd>Provider</dd></div>
-              <div><dt>Evidence required</dt><dd>{pkg?.evidence === "photo_video" ? "Photo + video" : pkg?.evidence === "photo" ? "Photo" : "None"}</dd></div>
-            </dl>
-          </div>
-
-          <div className="checkout-step">
-            <h2>Completion evidence</h2>
-            <EvidenceGallery items={evidence} />
-          </div>
-        </div>
-
-        {/* Right: actions + timeline */}
-        <aside className="checkout-summary">
-          <h3 style={{ fontWeight: 600, marginBottom: "var(--space-4)" }}>Next action</h3>
-          {!primary && !danger ? (
-            <p className="text-muted" style={{ fontSize: "var(--text-sm)" }}>No further action — this order is {statusLabel(status).toLowerCase()}.</p>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-              {primary ? <button className="btn btn-primary btn-full action-inline-primary" onClick={() => runPrimary(primary.to)}>{primary.label}</button> : null}
-              {danger ? <button className="btn btn-secondary btn-full" onClick={() => setDialog(danger.to === "payment_failed" ? "reject" : "cantfulfil")}>{danger.label}</button> : null}
-            </div>
-          )}
-          <div style={{ marginTop: "var(--space-6)" }}>
-            <h3 style={{ fontWeight: 600, marginBottom: "var(--space-4)" }}>Progress</h3>
-            <Timeline steps={timeline(status)} />
-          </div>
-          <p className="text-muted" style={{ fontSize: "var(--text-xs)", marginTop: "var(--space-5)" }}>Demo: actions update this screen only (not persisted).</p>
-        </aside>
-      </div>
+      {blocks}
 
       {/* Sticky primary action (mobile only) */}
       {primary ? (
