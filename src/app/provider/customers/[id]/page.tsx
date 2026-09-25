@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import type { OrderStatus } from "@/types/platform";
 import { DEMO_ORDERS, getService, money } from "@/lib/demo/catalog";
 import { PageHeader, OrderStatusBadge, NotFoundState } from "@/components/ui";
+import { formatDate } from "@/lib/format";
 
 export default async function CustomerDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,7 +22,7 @@ export default async function CustomerDetail({ params }: { params: Promise<{ id:
         return (
           <Link key={o.id} href={`/provider/orders/${o.id}`} className="order-row">
             <div className="order-row-main">
-              <span className="order-row-num">{o.order_number} · {o.created_at}</span>
+              <span className="order-row-num">{o.order_number} · {formatDate(o.created_at)}</span>
               <span className="order-row-title">{service?.name}</span>
               <span className="order-row-meta">{money(o.amount, o.currency)}</span>
             </div>

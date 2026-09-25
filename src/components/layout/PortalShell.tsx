@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, LoaderCircle } from "lucide-react";
+import { Menu, X, LoaderCircle } from "lucide-react";
 import type { NavItem } from "./nav";
 
 /**
@@ -29,6 +29,14 @@ export function PortalShell({
   const [checked, setChecked] = React.useState(!authCheckUrl);
 
   React.useEffect(() => { setOpen(false); }, [pathname]);
+
+  // Close the mobile drawer on Esc.
+  React.useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   React.useEffect(() => {
     if (!authCheckUrl || isAuthPage) return;
@@ -59,7 +67,8 @@ export function PortalShell({
 
   return (
     <div className="admin-layout">
-      <aside className={`admin-sidebar${open ? "" : " collapsed"}`}>
+      {open ? <div className="sidebar-backdrop" onClick={() => setOpen(false)} aria-hidden /> : null}
+      <aside id="portal-sidebar" className={`admin-sidebar${open ? "" : " collapsed"}`}>
         <div className="admin-sidebar-brand">{brand}</div>
         <ul className="admin-sidebar-nav">
           {nav.map((item, i) => {
@@ -79,12 +88,16 @@ export function PortalShell({
       </aside>
       <div className="admin-main">
         <header className="admin-header">
-          <h1 style={{ fontSize: "var(--text-xl)", fontWeight: 700 }}>{current?.label ?? brand}</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", minWidth: 0 }}>
+            <button className="menu-btn" onClick={() => setOpen((o) => !o)} aria-label="Menu" aria-expanded={open} aria-controls="portal-sidebar">
+              {open ? <X size={22} /> : <Menu size={22} />}
+            </button>
+            <h1 style={{ fontSize: "var(--text-xl)", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{current?.label ?? brand}</h1>
+          </div>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
             {logoutHref ? <Link href={logoutHref} className="btn btn-secondary btn-sm">Logout</Link> : null}
           </div>
         </header>
-        <button className="sidebar-toggle" onClick={() => setOpen(!open)} aria-label="Toggle menu"><Menu size={20} /></button>
         <div className="admin-content">{children}</div>
       </div>
     </div>

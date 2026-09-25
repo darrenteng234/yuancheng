@@ -5,6 +5,7 @@ import { isLocale } from "@/lib/i18n";
 import type { Locale, OrderStatus } from "@/types/platform";
 import { getOrder, getService, getProvider, getPlace, getPackage, money, DEMO_PAYMENT_METHOD } from "@/lib/demo/catalog";
 import { OrderStatusBadge } from "@/components/ui";
+import { formatDate } from "@/lib/format";
 import { Timeline, EvidenceGallery, PaymentMethodCard, type TimelineStep } from "@/components/order/OrderParts";
 
 // Build the customer timeline from the order status (manual-payment aware).
@@ -57,7 +58,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
             <dl className="pay-method-grid">
               <div><dt>{zh ? "套餐" : "Package"}</dt><dd>{pkg?.name}</dd></div>
               <div><dt>{zh ? "金额" : "Amount"}</dt><dd>{money(order.amount, order.currency)}</dd></div>
-              <div><dt>{zh ? "下单日期" : "Created"}</dt><dd>{order.created_at}</dd></div>
+              <div><dt>{zh ? "下单日期" : "Created"}</dt><dd>{formatDate(order.created_at)}</dd></div>
               <div><dt>{zh ? "代办" : "Fulfilment"}</dt><dd>{zh ? "服务商代办" : "Provider"}</dd></div>
             </dl>
             <div style={{ marginTop: "var(--space-4)" }}>

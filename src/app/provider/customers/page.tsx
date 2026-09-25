@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Users } from "lucide-react";
 import { DEMO_ORDERS, money } from "@/lib/demo/catalog";
 import { PageHeader } from "@/components/ui";
+import { formatDate } from "@/lib/format";
 
 // Derive customers from this provider's own orders (no CRM, no duplication).
 function customers() {
@@ -26,7 +27,7 @@ export default function ProviderCustomers() {
           <Link key={c.name} href={`/provider/customers/${encodeURIComponent(c.name)}`} className="order-row">
             <div className="order-row-main">
               <span className="order-row-title">{c.name}</span>
-              <span className="order-row-meta">Kuala Lumpur, Malaysia · {c.orders} order{c.orders === 1 ? "" : "s"} · last {c.last}</span>
+              <span className="order-row-meta">Kuala Lumpur, Malaysia · {c.orders} order{c.orders === 1 ? "" : "s"} · last {formatDate(c.last)}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
               <span className="text-muted">{money(c.total)}</span>

@@ -89,7 +89,8 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
   },
 ];
 
-export const money = (n: number, cur = "MYR") => `${cur === "MYR" ? "RM" : cur} ${n.toFixed(0)}`;
+// Single money formatter (RM 88.00). Delegates to src/lib/format.
+export { formatMoney as money } from "@/lib/format";
 
 export const getService = (slug: string) => DEMO_SERVICES.find((s) => s.slug === slug);
 export const getProvider = (slug: string) => DEMO_PROVIDERS.find((p) => p.slug === slug);
