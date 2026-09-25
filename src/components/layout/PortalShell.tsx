@@ -5,6 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, LoaderCircle } from "lucide-react";
 import type { NavItem } from "./nav";
 
+// Lets a page override the top-bar title (e.g. "Order YC-90001" on order detail).
+const TitleCtx = React.createContext<(t: string | null) => void>(() => {});
+export const usePortalTitle = () => React.useContext(TitleCtx);
+
 /**
  * Shared portal layout (sidebar + header) for admin / provider / runner.
  * One implementation, one design system. Optional client auth guard.
@@ -51,7 +55,9 @@ export function PortalShell({
   }, [authCheckUrl, loginUrl, router]);
 
   const active = (href: string) => pathname === href || pathname.startsWith(href + "/");
-  const current = nav.find((i) => active(i.href));
+  // Longest matching nav href wins, so /provider/orders beats /provider on order detail.
+  const current = [...nav].filter((i) => active(i.href)).sort((a, b) => b.href.length - a.href.length)[0];
+  const [titleOverride, setTitleOverride] = React.useState<string | null>(null);
 
   // Bare render for login/logout — no chrome, no guard.
   if (isAuthPage) return <>{children}</>;
@@ -71,7 +77,7 @@ export function PortalShell({
     <div className="admin-layout">
       {open ? <div className="sidebar-backdrop" onClick={() => setOpen(false)} aria-hidden /> : null}
       <aside id="portal-sidebar" className={`admin-sidebar${open ? "" : " collapsed"}`}>
-        <div className="admin-sidebar-brand">{brand}</div>
+        <div className="admin-sidebar-brand"><span className="yc-seal" style={{ width: 22, height: 22, fontSize: 13 }} aria-hidden>愿</span> {brand}</div>
         <ul className="admin-sidebar-nav">
           {nav.map((item, i) => {
             const showGroup = item.group && item.group !== nav[i - 1]?.group;
@@ -94,14 +100,14 @@ export function PortalShell({
             <button className="menu-btn" onClick={() => setOpen((o) => !o)} aria-label="Menu" aria-expanded={open} aria-controls="portal-sidebar">
               {open ? <X size={22} /> : <Menu size={22} />}
             </button>
-            <h1 style={{ fontSize: "var(--text-xl)", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{current?.label ?? brand}</h1>
+            <h1 style={{ fontSize: "var(--text-xl)", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{titleOverride ?? current?.label ?? brand}</h1>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
             {headerExtra}
             {logoutHref ? <Link href={logoutHref} className="btn btn-secondary btn-sm">{logoutLabel}</Link> : null}
           </div>
         </header>
-        <div className="admin-content">{children}</div>
+        <div className="admin-content"><TitleCtx.Provider value={setTitleOverride}>{children}</TitleCtx.Provider></div>
       </div>
     </div>
   );

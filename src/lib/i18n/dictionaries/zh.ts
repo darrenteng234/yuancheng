@@ -31,7 +31,7 @@ export const zh: Dictionary = {
     ctaDiscover: '服务流程',
     ctaProvider: '成为服务商',
     featureFulfilment: '可信履约',
-    featureFulfilmentDesc: '每笔订单由经审核的履约人完成并记录。',
+    featureFulfilmentDesc: '由独立服务商代您完成，并提交完成记录。',
     featureEvidence: '完成记录',
     featureEvidenceDesc: '上传照片与视频，让您亲眼见证。',
     featureTracking: '随时追踪',
@@ -43,7 +43,7 @@ export const zh: Dictionary = {
     steps: [
       { title: '选择服务', body: '在服务商店铺中选择服务与规格。' },
       { title: '安全付款', body: '通过 Stripe 结账，金额由服务商设定。' },
-      { title: '代为完成', body: '由经审核的履约人代您完成。' },
+      { title: '代为完成', body: '由独立服务商代您完成，并提交完成记录。' },
       { title: '查看凭证', body: '上传照片与视频，审核后方可完成。' },
     ],
   },
@@ -62,7 +62,7 @@ export const zh: Dictionary = {
   },
   terms: {
     title: '服务条款',
-    body: '使用愿成即表示您同意：我们协助完成寺庙相关事务，不保证任何宗教或灵性结果。订单由经审核的履约人尽力完成，价格由服务商设定。完整条款于结账时提供。',
+    body: '使用愿成即表示您同意：我们协助完成寺庙相关事务，不保证任何宗教或灵性结果。订单由独立服务商完成，服务商负责履约，价格由服务商设定。完整条款于结账时提供。',
   },
   refund: {
     title: '退款政策',

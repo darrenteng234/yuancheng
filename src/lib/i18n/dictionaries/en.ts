@@ -33,7 +33,7 @@ export const en = {
     ctaDiscover: 'How it works',
     ctaProvider: 'Become a provider',
     featureFulfilment: 'Verified fulfilment',
-    featureFulfilmentDesc: 'Every order is carried out by a vetted fulfiller and documented.',
+    featureFulfilmentDesc: 'An independent provider carries out your request and submits a completion record.',
     featureEvidence: 'Completion evidence',
     featureEvidenceDesc: 'Photos and video are uploaded so you can see it was done.',
     featureTracking: 'Track anytime',
@@ -45,7 +45,7 @@ export const en = {
     steps: [
       { title: 'Choose an offering', body: 'Pick a service and option from a provider’s storefront.' },
       { title: 'Pay securely', body: 'Checkout is handled through Stripe. The amount is fixed by the provider.' },
-      { title: 'We fulfil it', body: 'A vetted fulfiller carries out the offering on your behalf.' },
+      { title: 'We fulfil it', body: 'An independent provider carries out your request and submits a completion record.' },
       { title: 'See the evidence', body: 'Photos and video are uploaded and reviewed before completion.' },
     ],
   },
@@ -64,7 +64,7 @@ export const en = {
   },
   terms: {
     title: 'Terms of service',
-    body: 'By using Yuancheng you agree that we facilitate temple-related services and do not guarantee religious or spiritual outcomes. Orders are fulfilled on a best-effort basis by vetted fulfillers. Prices are set by providers. Full terms are provided at checkout.',
+    body: 'By using Yuancheng you agree that we facilitate temple-related services and do not guarantee religious or spiritual outcomes. Orders are fulfilled by independent providers, who are responsible for fulfilment. Prices are set by providers. Full terms are provided at checkout.',
   },
   refund: {
     title: 'Refund policy',

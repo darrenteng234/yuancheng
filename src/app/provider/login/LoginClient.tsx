@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase, supabaseConfigured } from "@/lib/supabase";
 import { useProviderT } from "@/components/layout/ProviderShell";
@@ -32,7 +33,7 @@ export default function ProviderLoginClient() {
   return (
     <div className="auth-wrap">
       <div className="auth-card">
-        <Link href="/" className="auth-brand">YUANCHENG</Link>
+        <Link href="/" className="auth-brand"><Logo /></Link>
         <h1>{L.title}</h1>
         <p className="text-muted" style={{ marginBottom: "var(--space-6)" }}>{L.subtitle}</p>
         {error ? <div className="banner-review" style={{ marginBottom: "var(--space-4)", background: "var(--color-error-bg)", color: "var(--color-error)" }}>{error}</div> : null}

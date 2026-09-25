@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="1040" viewBox="0 0 720 1040" font-family="-apple-system,Segoe UI,Roboto,sans-serif">
   <rect width="720" height="1040" fill="#F1EDE4"/>
   <rect x="60" y="70" width="600" height="900" rx="20" fill="#FFFFFF" stroke="#E1DED5"/>
-  <rect x="60" y="70" width="600" height="110" rx="20" fill="#1F5A47"/>
+  <rect x="60" y="70" width="600" height="110" rx="20" fill="#5A3A22"/>
   <text x="90" y="140" fill="#FFFFFF" font-size="30" font-weight="700">Maybank</text>
-  <text x="630" y="140" fill="#D8E6DF" font-size="22" text-anchor="end">Transfer receipt</text>
+  <text x="630" y="140" fill="#E8DCCD" font-size="22" text-anchor="end">Transfer receipt</text>
   <text x="90" y="250" fill="#5F6761" font-size="22">Status</text>
   <text x="630" y="250" fill="#2E6B55" font-size="24" font-weight="700" text-anchor="end">Successful</text>
   <line x1="90" y1="290" x2="630" y2="290" stroke="#E1DED5"/>

@@ -4,22 +4,26 @@ import { DEMO_ORDERS, DEMO_SERVICES, DEMO_PRODUCTS, money } from "@/lib/demo/cat
 import { PageHeader } from "@/components/ui";
 import { providerLang } from "@/lib/i18n/provider-lang";
 import { getProviderDict } from "@/lib/i18n/provider";
+import { isOverdue } from "@/lib/demo/contact";
 
 const PROVIDER_NAME = "Golden Lotus Services";
 
 export default async function ProviderDashboard() {
-  const t = getProviderDict(await providerLang()).dash;
+  const lang = await providerLang();
+  const dict = getProviderDict(lang);
+  const t = dict.dash;
   const proofReview = DEMO_ORDERS.filter((o) => o.status === "payment_proof_submitted");
   const readyAccept = DEMO_ORDERS.filter((o) => o.status === "paid");
   const inProgress = DEMO_ORDERS.filter((o) => o.status === "in_progress" || o.status === "accepted");
   const completed = DEMO_ORDERS.filter((o) => o.status === "completed");
   const revenue = completed.reduce((s, o) => s + o.amount, 0);
 
+  const proofOverdue = proofReview.some((o) => isOverdue(`${o.created_at}T10:32:00+08:00`));
   const attention = [
-    proofReview.length ? { n: proofReview.length, label: t.proofReview, href: `/provider/orders/${proofReview[0].id}` } : null,
-    readyAccept.length ? { n: readyAccept.length, label: t.readyAccept, href: "/provider/orders?f=paid" } : null,
-    inProgress.length ? { n: inProgress.length, label: t.inProgress, href: "/provider/orders?f=progress" } : null,
-  ].filter(Boolean) as { n: number; label: string; href: string }[];
+    proofReview.length ? { n: proofReview.length, label: t.proofReview, href: `/provider/orders/${proofReview[0].id}`, overdue: proofOverdue } : null,
+    readyAccept.length ? { n: readyAccept.length, label: t.readyAccept, href: "/provider/orders?f=paid", overdue: false } : null,
+    inProgress.length ? { n: inProgress.length, label: t.inProgress, href: "/provider/orders?f=progress", overdue: false } : null,
+  ].filter(Boolean) as { n: number; label: string; href: string; overdue: boolean }[];
 
   return (
     <div style={{ padding: "var(--space-6)", maxWidth: 1000, margin: "0 auto" }}>
@@ -34,7 +38,7 @@ export default async function ProviderDashboard() {
           <div className="needs-attention">
             {attention.map((a, i) => (
               <Link key={i} href={a.href} className="na-item">
-                <span>{a.label}</span>
+                <span style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>{a.label}{a.overdue ? <span className="sbadge sbadge--warning">{dict.od.overdue}</span> : null}</span>
                 <span style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}><span className="na-count">{a.n}</span><ArrowRight size={16} style={{ color: "var(--color-text-muted)" }} /></span>
               </Link>
             ))}

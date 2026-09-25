@@ -2,6 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { Menu, X, Globe } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 import { LOCALES, LOCALE_LABELS, DEFAULT_LOCALE } from "@/lib/i18n";
 import type { Locale } from "@/types/platform";
 
@@ -24,7 +25,7 @@ export function SiteHeader({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   return (
     <header className="site-header">
       <div className="header-inner container">
-        <Link href={`/${locale}`} className="header-logo" style={{ letterSpacing: "0.12em", fontWeight: 700 }}>YUANCHENG</Link>
+        <Link href={`/${locale}`} className="header-logo"><Logo /></Link>
         <button className="hamburger" onClick={() => setOpen(!open)} aria-label="Menu" aria-expanded={open}>
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>

@@ -5,7 +5,10 @@ import { DEMO_ORDERS, getService, money } from "@/lib/demo/catalog";
 import { PageHeader, OrderStatusBadge } from "@/components/ui";
 import { formatDate } from "@/lib/format";
 import { providerLang } from "@/lib/i18n/provider-lang";
-import { getProviderDict } from "@/lib/i18n/provider";
+import { getProviderDict, fill } from "@/lib/i18n/provider";
+import { isOverdue, verifyDeadlineLabel } from "@/lib/demo/contact";
+
+const uploadedISO = (created: string) => `${created}T10:32:00+08:00`;
 
 export default async function ProviderOrders({ searchParams }: { searchParams: Promise<{ f?: string }> }) {
   const { f = "all" } = await searchParams;
@@ -18,8 +21,12 @@ export default async function ProviderOrders({ searchParams }: { searchParams: P
     { key: "progress", label: t.progress, match: (s: string) => s === "in_progress" || s === "evidence_submitted" },
     { key: "completed", label: t.completed, match: (s: string) => s === "completed" },
   ];
+  const od = getProviderDict(lang).od;
   const active = FILTERS.find((x) => x.key === f) ?? FILTERS[0];
-  const orders = DEMO_ORDERS.filter((o) => !active.match || active.match(o.status));
+  const overdueOf = (o: (typeof DEMO_ORDERS)[number]) => o.status === "payment_proof_submitted" && isOverdue(uploadedISO(o.created_at));
+  // Overdue payment reviews sort to the top.
+  const orders = DEMO_ORDERS.filter((o) => !active.match || active.match(o.status))
+    .sort((a, b) => Number(overdueOf(b)) - Number(overdueOf(a)));
 
   return (
     <div style={{ padding: "var(--space-6)", maxWidth: 1000, margin: "0 auto" }}>
@@ -36,12 +43,17 @@ export default async function ProviderOrders({ searchParams }: { searchParams: P
           const service = getService(o.serviceSlug);
           return (
             <Link key={o.id} href={`/provider/orders/${o.id}`} className="order-row">
-              <div className="order-row-main">
+              <div className="order-row-main" style={{ minWidth: 0 }}>
                 <span className="order-row-num">{o.order_number} · {formatDate(o.created_at, lang)}</span>
                 <span className="order-row-title">{service?.name}</span>
                 <span className="order-row-meta">{o.customer_name} · {money(o.amount, o.currency)}</span>
+                {o.status === "payment_proof_submitted" ? (
+                  overdueOf(o)
+                    ? <span className="sbadge sbadge--warning" style={{ marginTop: 4, alignSelf: "flex-start" }}>{od.overdue}</span>
+                    : <span className="order-row-meta">{fill(od.verifyBy, { deadline: verifyDeadlineLabel(uploadedISO(o.created_at), lang) })}</span>
+                ) : null}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", flex: "none" }}>
                 <OrderStatusBadge status={o.status as OrderStatus} locale={lang} />
                 <ArrowRight size={16} style={{ color: "var(--color-text-muted)" }} />
               </div>

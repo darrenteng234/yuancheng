@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { supabase, supabaseConfigured } from "@/lib/supabase";
 

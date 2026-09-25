@@ -1,5 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { Noto_Serif_SC } from "next/font/google";
+
+// Headings only. Body keeps the system stack.
+const serif = Noto_Serif_SC({ weight: "600", subsets: ["latin"], display: "swap", variable: "--font-serif", preload: false });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -25,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={serif.variable}>
       <body>{children}</body>
     </html>
   );

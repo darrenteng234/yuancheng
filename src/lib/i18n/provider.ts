@@ -43,13 +43,16 @@ const en = {
     progress: "Progress", demoNote: "Demo: actions update this screen only (not persisted).",
     paymentIssue: "Payment issue", receiptRejected: "Receipt rejected. The customer can upload a new receipt.",
     assignment: "Assignment", paymentReceipt: "Payment receipt",
+    verifyBy: "Verify by {deadline}", overdue: "Overdue", waCustomer: "WhatsApp {name}",
+    refundInstruction: "You will refund the customer directly. Yuancheng does not hold or transfer money.",
+    refundFooter: "Please complete the refund within 3 days. If it is not marked as sent after 3 days, Yuancheng support will follow up.",
     actions: {
       verify_payment: "Verify payment", reject_receipt: "Reject receipt", accept_order: "Accept order",
       start_fulfilment: "Start fulfilment", submit_evidence: "Submit evidence", complete_order: "Complete order",
       cant_fulfil: "Can't fulfil this order", mark_refund_sent: "Mark refund as sent", upload_proof: "Upload payment proof",
     },
     steps: {
-      proofSubmitted: "Payment proof submitted", paymentVerified: "Payment verified", accepted: "Accepted",
+      proofSubmitted: "Receipt submitted", paymentVerified: "Payment verified", accepted: "Accepted",
       fulfilmentStarted: "Fulfilment started", evidenceSubmitted: "Evidence submitted", completed: "Completed",
     },
     dlg: {
@@ -154,13 +157,16 @@ const zh: typeof en = {
     progress: "进度", demoNote: "演示：操作仅更新此屏幕（不会保存）。",
     paymentIssue: "付款问题", receiptRejected: "收据已退回。客户可重新上传收据。",
     assignment: "分配", paymentReceipt: "付款收据",
+    verifyBy: "请在 {deadline} 前确认", overdue: "已逾期", waCustomer: "WhatsApp 联系 {name}",
+    refundInstruction: "您将直接退款给客户。愿成不代收、不代转任何款项。",
+    refundFooter: "请在 3 天内完成退款。若 3 天后仍未标记为已退款，愿成客服将跟进。",
     actions: {
       verify_payment: "确认收款", reject_receipt: "退回收据", accept_order: "接单",
       start_fulfilment: "开始执行", submit_evidence: "提交完成记录", complete_order: "完成订单",
       cant_fulfil: "无法完成此订单", mark_refund_sent: "标记为已退款", upload_proof: "上传付款凭据",
     },
     steps: {
-      proofSubmitted: "已提交付款凭据", paymentVerified: "已确认收款", accepted: "已接单",
+      proofSubmitted: "已提交收据", paymentVerified: "已确认收款", accepted: "已接单",
       fulfilmentStarted: "已开始执行", evidenceSubmitted: "已提交完成记录", completed: "已完成",
     },
     dlg: {

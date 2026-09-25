@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const MODE = process.argv[2] || 'before'; // before | after | after-5c
-const IS_5C = MODE === 'after-5c';
+const IS_5C = MODE.startsWith('after-5');
 const BASE = process.env.CAPTURE_BASE || 'http://localhost:3000';
 const OUT = path.join('docs/design-audit/screens', MODE);
 const WIDTHS = IS_5C ? [375, 1440] : [375, 768, 1440];

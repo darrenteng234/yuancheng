@@ -6,6 +6,7 @@ import type { Locale, OrderStatus } from "@/types/platform";
 import { getOrder, getService, getProvider, getPlace, getPackage, money, DEMO_PAYMENT_METHOD } from "@/lib/demo/catalog";
 import { OrderStatusBadge } from "@/components/ui";
 import { formatDate } from "@/lib/format";
+import { verifyDeadlineLabel, waLink, verifyChaseMessage, DEMO_PROVIDER_WHATSAPP, SUPPORT_WHATSAPP } from "@/lib/demo/contact";
 import { Timeline, EvidenceGallery, PaymentMethodCard, type TimelineStep } from "@/components/order/OrderParts";
 
 // Build the customer timeline from the order status (manual-payment aware).
@@ -72,10 +73,21 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
             <h2>{zh ? "付款" : "Payment"}</h2>
             <PaymentMethodCard method={DEMO_PAYMENT_METHOD} locale={l} />
             {awaitingVerify ? (
-              <div className="banner-review" style={{ marginTop: "var(--space-4)" }}>
-                {zh ? "付款凭证已提交，等待服务商核实。上传收据不代表已核实付款。"
-                    : "Payment proof submitted — awaiting provider verification. Uploading a receipt does not mean payment is verified."}
-              </div>
+              <>
+                <div className="banner-review" style={{ marginTop: "var(--space-4)" }}>
+                  {zh
+                    ? `服务商将在 24 小时内核实（${verifyDeadlineLabel(order.created_at + "T10:32:00+08:00", zh ? "zh" : "en")} 前）。上传收据不代表已核实付款。`
+                    : `The provider will verify within 24 hours (by ${verifyDeadlineLabel(order.created_at + "T10:32:00+08:00", zh ? "zh" : "en")}). Uploading a receipt does not mean payment is verified.`}
+                </div>
+                <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap", marginTop: "var(--space-3)" }}>
+                  <a className="btn btn-secondary btn-sm" href={waLink(DEMO_PROVIDER_WHATSAPP, verifyChaseMessage(order.order_number, zh ? "zh" : "en"))} target="_blank" rel="noreferrer">
+                    {zh ? "WhatsApp 联系服务商" : "WhatsApp the provider"}
+                  </a>
+                  <a className="nav-link-plain" style={{ fontSize: "var(--text-sm)" }} href={waLink(SUPPORT_WHATSAPP, zh ? `订单 ${order.order_number} 超过 24 小时仍未核实。` : `Order ${order.order_number} not verified after 24 hours.`)} target="_blank" rel="noreferrer">
+                    {zh ? "超过 24 小时仍未核实？联系愿成客服" : "Not verified after 24 hours? Contact Yuancheng support"}
+                  </a>
+                </div>
+              </>
             ) : null}
           </div>
 

@@ -24,6 +24,7 @@ export default function CheckoutClient() {
 
   const [name, setName] = React.useState("");
   const [location, setLocation] = React.useState("");
+  const [whatsapp, setWhatsapp] = React.useState("+60 ");
   const [request, setRequest] = React.useState("");
   const [note, setNote] = React.useState("");
   const [submitted, setSubmitted] = React.useState(false);
@@ -33,7 +34,7 @@ export default function CheckoutClient() {
     return <div className="container section"><p>{zh ? "找不到服务。" : "Service not found."} <Link href={`/${locale}/discover`}>{zh ? "返回浏览" : "Back to discover"}</Link></p></div>;
   }
   const amount = pkg.price;
-  const canPay = name.trim() && location.trim() && request.trim();
+  const canPay = name.trim() && location.trim() && request.trim() && whatsapp.replace(/\D/g, "").length >= 8;
 
   if (submitted) {
     return (
@@ -83,6 +84,11 @@ export default function CheckoutClient() {
               <div>
                 <label className="form-label">{zh ? "国家 / 城市" : "Country / City"} *</label>
                 <input className="form-input" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={zh ? "例如：马来西亚，吉隆坡" : "e.g. Kuala Lumpur, Malaysia"} />
+              </div>
+              <div>
+                <label className="form-label">{zh ? "WhatsApp 号码" : "WhatsApp number"} *</label>
+                <input className="form-input" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} inputMode="tel" placeholder="+60 12 345 6789" />
+                <div className="field-count" style={{ textAlign: "left", color: "var(--color-text-muted)" }}>{zh ? "服务商会用它联系您（默认马来西亚 +60）。" : "The provider uses this to reach you (Malaysia +60 by default)."}</div>
               </div>
               <div>
                 <label className="form-label">{zh ? "您的请求" : "Your request"} *</label>

@@ -138,7 +138,7 @@ export type DemoEvidence = { type: "photo" | "video"; url: string; label: string
 export interface DemoOrder {
   id: string; order_number: string; serviceSlug: string; packageId: string; providerSlug: string;
   status: OrderStatus; amount: number; currency: string; created_at: string;
-  customer_name: string; customer_request: string; customer_location?: string;
+  customer_name: string; customer_request: string; customer_location?: string; customer_phone?: string;
   evidence: DemoEvidence[];
 }
 export const DEMO_ORDERS: DemoOrder[] = [
@@ -147,6 +147,7 @@ export const DEMO_ORDERS: DemoOrder[] = [
     providerSlug: "golden-lotus-services", status: "payment_proof_submitted", amount: 88, currency: "MYR",
     created_at: "2026-09-20", customer_name: "Demo Customer",
     customer_request: "Please make an offering for the health and safety of my family.",
+    customer_phone: "60128889999",
     evidence: [],
   },
   {
@@ -154,6 +155,7 @@ export const DEMO_ORDERS: DemoOrder[] = [
     providerSlug: "golden-lotus-services", status: "completed", amount: 188, currency: "MYR",
     created_at: "2026-09-12", customer_name: "Demo Customer",
     customer_request: "Offering with photo and video, in memory of my grandfather.",
+    customer_phone: "60128889999",
     evidence: [
       { type: "photo", url: "https://picsum.photos/seed/yuancheng1/900/700", label: "Offering placed" },
       { type: "photo", url: "https://picsum.photos/seed/yuancheng2/900/700", label: "At the altar" },
