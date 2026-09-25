@@ -10,13 +10,15 @@ import type { NavItem } from "./nav";
  * One implementation, one design system. Optional client auth guard.
  */
 export function PortalShell({
-  brand, nav, logoutHref, authCheckUrl, loginUrl, children,
+  brand, nav, logoutHref, logoutLabel = "Logout", authCheckUrl, loginUrl, headerExtra, children,
 }: {
   brand: string;
   nav: NavItem[];
   logoutHref?: string;
+  logoutLabel?: string;
   authCheckUrl?: string;
   loginUrl?: string;
+  headerExtra?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -95,7 +97,8 @@ export function PortalShell({
             <h1 style={{ fontSize: "var(--text-xl)", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{current?.label ?? brand}</h1>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-            {logoutHref ? <Link href={logoutHref} className="btn btn-secondary btn-sm">Logout</Link> : null}
+            {headerExtra}
+            {logoutHref ? <Link href={logoutHref} className="btn btn-secondary btn-sm">{logoutLabel}</Link> : null}
           </div>
         </header>
         <div className="admin-content">{children}</div>

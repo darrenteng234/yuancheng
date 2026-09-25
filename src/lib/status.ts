@@ -21,7 +21,7 @@ const LABELS: Record<OrderStatus, Label> = {
   completed:               { en: "Completed", zh: "已完成", tone: "success" },
   cancelled:               { en: "Cancelled", zh: "已取消", tone: "muted" },
   refunded:                { en: "Refunded", zh: "已退款", tone: "muted" },
-  refund_requested:        { en: "Refund requested", zh: "已申请退款", tone: "warning" },
+  refund_requested:        { en: "Refund requested", zh: "待退款", tone: "warning" },
   refund_confirmed:        { en: "Refund confirmed", zh: "退款已确认", tone: "success" },
   disputed:                { en: "Issue raised", zh: "问题反馈", tone: "error" },
 };

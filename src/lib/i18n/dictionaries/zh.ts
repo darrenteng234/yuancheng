@@ -23,16 +23,16 @@ export const zh: Dictionary = {
     faq: '常见问题',
     myOrders: '我的订单',
     signIn: '登录',
-    providerPortal: '服务方入口',
+    providerPortal: '服务商入口',
   },
   home: {
     heroTitle: '愿成',
     heroSubtitle: '诚心代拜与服务，由我们代为完成——每笔订单都附有照片与视频凭证。',
     ctaDiscover: '服务流程',
-    ctaProvider: '成为服务方',
+    ctaProvider: '成为服务商',
     featureFulfilment: '可信履约',
     featureFulfilmentDesc: '每笔订单由经审核的履约人完成并记录。',
-    featureEvidence: '真实凭证',
+    featureEvidence: '完成记录',
     featureEvidenceDesc: '上传照片与视频，让您亲眼见证。',
     featureTracking: '随时追踪',
     featureTrackingDesc: '通过安全链接，从付款到完成全程追踪。',
@@ -41,8 +41,8 @@ export const zh: Dictionary = {
     title: '服务流程',
     intro: '从下单到完成，每一步都有记录。',
     steps: [
-      { title: '选择服务', body: '在服务方店铺中选择服务与规格。' },
-      { title: '安全付款', body: '通过 Stripe 结账，金额由服务方设定。' },
+      { title: '选择服务', body: '在服务商店铺中选择服务与规格。' },
+      { title: '安全付款', body: '通过 Stripe 结账，金额由服务商设定。' },
       { title: '代为完成', body: '由经审核的履约人代您完成。' },
       { title: '查看凭证', body: '上传照片与视频，审核后方可完成。' },
     ],
@@ -58,15 +58,15 @@ export const zh: Dictionary = {
   },
   about: {
     title: '关于愿成',
-    body: '愿成连接信众与寺庙及服务方，代为完成诚心的心愿。服务方发布其服务，我们以透明与凭证协助交付。',
+    body: '由独立服务商代您进行供奉与仪式，完成后附照片与视频记录。愿成连接您与场所及独立服务商，服务商发布其服务，我们以透明的记录协助交付。',
   },
   terms: {
     title: '服务条款',
-    body: '使用愿成即表示您同意：我们协助完成寺庙相关事务，不保证任何宗教或灵性结果。订单由经审核的履约人尽力完成，价格由服务方设定。完整条款于结账时提供。',
+    body: '使用愿成即表示您同意：我们协助完成寺庙相关事务，不保证任何宗教或灵性结果。订单由经审核的履约人尽力完成，价格由服务商设定。完整条款于结账时提供。',
   },
   refund: {
     title: '退款政策',
-    body: '若订单无法完成或凭证不符，您可凭订单编号申请退款。批准的退款将退回原付款方式。部分完成的订单可能适用部分退款。',
+    body: '如服务商无法完成订单，将由服务商直接退款给您。愿成不代收或代转款项。请凭订单编号联系服务商处理。',
   },
   order: {
     status: {

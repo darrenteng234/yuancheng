@@ -106,17 +106,18 @@ export function checkTransition(from: OrderStatus, to: OrderStatus, actor: Role)
  * or unauthorized move.
  */
 export type ActionKind = 'primary' | 'danger';
-export interface OrderAction { to: OrderStatus; label: string; kind: ActionKind; }
+/** `label` is the English fallback; `labelKey` maps into the provider dictionary (od.actions). */
+export interface OrderAction { to: OrderStatus; label: string; labelKey: string; kind: ActionKind; }
 
 const NEXT: Partial<Record<OrderStatus, OrderAction[]>> = {
-  pending_payment:         [{ to: 'payment_proof_submitted', label: 'Upload payment proof', kind: 'primary' }],
-  payment_proof_submitted: [{ to: 'paid', label: 'Verify payment', kind: 'primary' }, { to: 'payment_failed', label: 'Reject receipt', kind: 'danger' }],
-  paid:                    [{ to: 'accepted', label: 'Accept order', kind: 'primary' }, { to: 'refund_requested', label: "Can't fulfil this order", kind: 'danger' }],
-  accepted:                [{ to: 'in_progress', label: 'Start fulfilment', kind: 'primary' }, { to: 'refund_requested', label: "Can't fulfil this order", kind: 'danger' }],
-  in_progress:             [{ to: 'evidence_submitted', label: 'Submit evidence', kind: 'primary' }, { to: 'refund_requested', label: "Can't fulfil this order", kind: 'danger' }],
-  evidence_submitted:      [{ to: 'completed', label: 'Complete order', kind: 'primary' }],
-  under_review:            [{ to: 'completed', label: 'Complete order', kind: 'primary' }],
-  refund_requested:        [{ to: 'refund_confirmed', label: 'Mark refund as sent', kind: 'primary' }],
+  pending_payment:         [{ to: 'payment_proof_submitted', label: 'Upload payment proof', labelKey: 'upload_proof', kind: 'primary' }],
+  payment_proof_submitted: [{ to: 'paid', label: 'Verify payment', labelKey: 'verify_payment', kind: 'primary' }, { to: 'payment_failed', label: 'Reject receipt', labelKey: 'reject_receipt', kind: 'danger' }],
+  paid:                    [{ to: 'accepted', label: 'Accept order', labelKey: 'accept_order', kind: 'primary' }, { to: 'refund_requested', label: "Can't fulfil this order", labelKey: 'cant_fulfil', kind: 'danger' }],
+  accepted:                [{ to: 'in_progress', label: 'Start fulfilment', labelKey: 'start_fulfilment', kind: 'primary' }, { to: 'refund_requested', label: "Can't fulfil this order", labelKey: 'cant_fulfil', kind: 'danger' }],
+  in_progress:             [{ to: 'evidence_submitted', label: 'Submit evidence', labelKey: 'submit_evidence', kind: 'primary' }, { to: 'refund_requested', label: "Can't fulfil this order", labelKey: 'cant_fulfil', kind: 'danger' }],
+  evidence_submitted:      [{ to: 'completed', label: 'Complete order', labelKey: 'complete_order', kind: 'primary' }],
+  under_review:            [{ to: 'completed', label: 'Complete order', labelKey: 'complete_order', kind: 'primary' }],
+  refund_requested:        [{ to: 'refund_confirmed', label: 'Mark refund as sent', labelKey: 'mark_refund_sent', kind: 'primary' }],
 };
 
 /** Legal, authorized next actions for this actor — primary first, danger last. */

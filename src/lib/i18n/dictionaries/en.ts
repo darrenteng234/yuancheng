@@ -34,7 +34,7 @@ export const en = {
     ctaProvider: 'Become a provider',
     featureFulfilment: 'Verified fulfilment',
     featureFulfilmentDesc: 'Every order is carried out by a vetted fulfiller and documented.',
-    featureEvidence: 'Real evidence',
+    featureEvidence: 'Completion evidence',
     featureEvidenceDesc: 'Photos and video are uploaded so you can see it was done.',
     featureTracking: 'Track anytime',
     featureTrackingDesc: 'Follow your order from payment to completion with a secure link.',
@@ -60,7 +60,7 @@ export const en = {
   },
   about: {
     title: 'About Yuancheng',
-    body: 'Yuancheng connects people with temples and service providers, and fulfils sincere offerings on their behalf. Providers publish their services; we help deliver them with transparency and documented evidence.',
+    body: 'Independent providers carry out offerings and ceremonies on your behalf, with photo and video records on completion. Yuancheng connects you with places and independent providers; providers publish their services and we help deliver them with transparent records.',
   },
   terms: {
     title: 'Terms of service',
@@ -68,7 +68,7 @@ export const en = {
   },
   refund: {
     title: 'Refund policy',
-    body: 'If an order cannot be fulfilled or the evidence is unsatisfactory, you may request a refund with your order number. Approved refunds are returned to your original payment method. Partial refunds may apply where part of an order was completed.',
+    body: 'If a provider cannot complete an order, the provider refunds you directly. Yuancheng does not collect or transfer funds. Contact the provider with your order number to arrange it.',
   },
   order: {
     status: {
