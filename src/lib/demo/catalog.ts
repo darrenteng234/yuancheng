@@ -109,13 +109,13 @@ export interface DemoPackage {
 }
 export const DEMO_PACKAGES: DemoPackage[] = [
   { id: "pk-offering-basic", serviceSlug: "temple-offering-service", name: "Basic", tier: "basic", price: 88, currency: "MYR", evidence: "photo",
-    includes: [{ en: "Standard offering set", zh: "标准供品套装" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo evidence", zh: "照片凭证" }] },
+    includes: [{ en: "Standard offering set", zh: "标准供品套装" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo evidence", zh: "照片记录" }] },
   { id: "pk-offering-premium", serviceSlug: "temple-offering-service", name: "Premium", tier: "premium", price: 188, currency: "MYR", evidence: "photo_video",
-    includes: [{ en: "Larger offering set", zh: "加大供品套装" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo + video evidence", zh: "照片 + 视频凭证" }] },
+    includes: [{ en: "Larger offering set", zh: "加大供品套装" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo + video evidence", zh: "照片 + 视频记录" }] },
   { id: "pk-blessing-basic", serviceSlug: "blessing-service", name: "Standard", tier: "standard", price: 120, currency: "MYR", evidence: "photo",
-    includes: [{ en: "Blessing ceremony", zh: "祈福仪式" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo evidence", zh: "照片凭证" }] },
+    includes: [{ en: "Blessing ceremony", zh: "祈福仪式" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo evidence", zh: "照片记录" }] },
   { id: "pk-ancestral-basic", serviceSlug: "ancestral-remembrance", name: "Standard", tier: "standard", price: 168, currency: "MYR", evidence: "photo_video",
-    includes: [{ en: "Remembrance service", zh: "追思服务" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo + video evidence", zh: "照片 + 视频凭证" }] },
+    includes: [{ en: "Remembrance service", zh: "追思服务" }, { en: "Provider fulfilment", zh: "服务商代办" }, { en: "Photo + video evidence", zh: "照片 + 视频记录" }] },
 ];
 export const packagesByService = (slug: string) => DEMO_PACKAGES.filter((p) => p.serviceSlug === slug);
 export const getPackage = (id: string) => DEMO_PACKAGES.find((p) => p.id === id);
@@ -133,11 +133,14 @@ export const DEMO_PAYMENT_METHOD = {
   },
 };
 
-// ── Demo orders (customer/provider/admin UI fixtures) ──────────────────────────
+// ── Demo orders (fixtures). Timestamps are RELATIVE to now so the demo never
+// goes stale: created_at derives from createdDaysAgo, and the receipt-upload time
+// (for verify deadlines) derives from uploadedHoursAgo, both computed at render. ──
 export type DemoEvidence = { type: "photo" | "video"; url: string; label: string };
 export interface DemoOrder {
   id: string; order_number: string; serviceSlug: string; packageId: string; providerSlug: string;
-  status: OrderStatus; amount: number; currency: string; created_at: string;
+  status: OrderStatus; amount: number; currency: string;
+  createdDaysAgo: number; uploadedHoursAgo?: number; completedDaysAgo?: number;
   customer_name: string; customer_request: string; customer_location?: string; customer_phone?: string;
   evidence: DemoEvidence[];
 }
@@ -145,15 +148,23 @@ export const DEMO_ORDERS: DemoOrder[] = [
   {
     id: "ord-a", order_number: "YC-90001", serviceSlug: "temple-offering-service", packageId: "pk-offering-basic",
     providerSlug: "golden-lotus-services", status: "payment_proof_submitted", amount: 88, currency: "MYR",
-    created_at: "2026-09-20", customer_name: "Demo Customer",
+    createdDaysAgo: 0, uploadedHoursAgo: 3, customer_name: "Demo Customer",
     customer_request: "Please make an offering for the health and safety of my family.",
     customer_phone: "60128889999",
     evidence: [],
   },
   {
+    id: "ord-c", order_number: "YC-90003", serviceSlug: "blessing-service", packageId: "pk-blessing-basic",
+    providerSlug: "golden-lotus-services", status: "payment_proof_submitted", amount: 120, currency: "MYR",
+    createdDaysAgo: 2, uploadedHoursAgo: 26, customer_name: "Wei Ling",
+    customer_request: "A blessing for my mother’s recovery.",
+    customer_phone: "60123334444",
+    evidence: [],
+  },
+  {
     id: "ord-b", order_number: "YC-90002", serviceSlug: "temple-offering-service", packageId: "pk-offering-premium",
     providerSlug: "golden-lotus-services", status: "completed", amount: 188, currency: "MYR",
-    created_at: "2026-09-12", customer_name: "Demo Customer",
+    createdDaysAgo: 13, completedDaysAgo: 12, customer_name: "Demo Customer",
     customer_request: "Offering with photo and video, in memory of my grandfather.",
     customer_phone: "60128889999",
     evidence: [
@@ -164,3 +175,7 @@ export const DEMO_ORDERS: DemoOrder[] = [
   },
 ];
 export const getOrder = (id: string) => DEMO_ORDERS.find((o) => o.id === id || o.order_number === id);
+
+/** Relative timestamps computed at call time (keeps the demo current). */
+export const orderCreatedISO = (o: DemoOrder) => new Date(Date.now() - o.createdDaysAgo * 86400000).toISOString();
+export const orderUploadedISO = (o: DemoOrder) => new Date(Date.now() - (o.uploadedHoursAgo ?? 0) * 3600000).toISOString();

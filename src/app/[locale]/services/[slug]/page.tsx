@@ -7,7 +7,7 @@ import { getService, getProvider, getPlace, money, packagesByService } from "@/l
 import { PackageCard } from "@/components/order/OrderParts";
 
 const EVIDENCE = {
-  none: { en: "No evidence", zh: "无凭证" },
+  none: { en: "No evidence", zh: "无" },
   photo: { en: "Photo", zh: "照片" },
   photo_video: { en: "Photo + video", zh: "照片 + 视频" },
 };
@@ -24,7 +24,7 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
   const startPrice = pkgs.length ? Math.min(...pkgs.map((p) => p.price)) : s.price;
 
   const steps = zh
-    ? [["下单", "您完成付款后订单创建。"], ["服务商接单", "服务商确认并接受订单。"], ["代办", "服务商代您执行服务。"], ["凭证", "完成时提交照片/视频（如适用）。"], ["完成", "订单标记为完成。"]]
+    ? [["下单", "您完成付款后订单创建。"], ["服务商接单", "服务商确认并接受订单。"], ["代办", "服务商代您执行服务。"], ["完成记录", "完成时提交照片/视频（如适用）。"], ["完成", "订单标记为完成。"]]
     : [["Order placed", "Your order is created after payment."], ["Provider accepts", "The provider confirms and accepts."], ["Fulfilment", "The provider carries out the service."], ["Evidence", "Photo/video submitted on completion (where offered)."], ["Completion", "The order is marked complete."]];
 
   return (
@@ -84,7 +84,7 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
           <p>{s.fulfilment}. {zh ? "由服务商代您执行。" : "Carried out by the provider on your behalf."}</p>
         </section>
         <section className="svc-section">
-          <h2>{zh ? "凭证" : "Evidence"}</h2>
+          <h2>{zh ? "完成记录" : "Evidence"}</h2>
           <p>{EVIDENCE[s.evidence][zh ? "zh" : "en"]}. {s.visibility === "approval" ? (zh ? "需审核后对客户可见。" : "Visible to customer after approval.") : (zh ? "完成后自动对客户可见。" : "Shown to the customer automatically on completion.")}</p>
         </section>
       </div>
@@ -106,8 +106,8 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
       <section className="svc-section svc-note">
         <h2 style={{ display: "flex", alignItems: "center", gap: "8px" }}><Info size={18} /> {zh ? "购买前请注意" : "Before you purchase"}</h2>
         <ul style={{ marginTop: "var(--space-3)", paddingLeft: "var(--space-5)", color: "var(--color-text-secondary)", display: "grid", gap: "6px" }}>
-          <li>{zh ? "价格与凭证政策如上所示。" : "Price and evidence policy are shown above."}</li>
-          <li>{zh ? "完成凭证记录服务商所提交的内容，并非宗教或精神结果的保证。" : "Completion evidence records what the provider submitted. It is not a guarantee of religious or spiritual outcomes."}</li>
+          <li>{zh ? "价格与完成记录政策如上所示。" : "Price and evidence policy are shown above."}</li>
+          <li>{zh ? "完成记录仅记录服务商所提交的内容，并非宗教或精神结果的保证。" : "Completion evidence records what the provider submitted. It is not a guarantee of religious or spiritual outcomes."}</li>
           <li>{zh ? "如有问题，可通过订单发起申诉。" : "If there is an issue, you can raise it from your order."}</li>
         </ul>
       </section>

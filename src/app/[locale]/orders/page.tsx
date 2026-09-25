@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, PackageOpen } from "lucide-react";
 import { isLocale } from "@/lib/i18n";
 import type { Locale, OrderStatus } from "@/types/platform";
-import { DEMO_ORDERS, getService, getProvider, money } from "@/lib/demo/catalog";
+import { DEMO_ORDERS, getService, getProvider, money, orderCreatedISO } from "@/lib/demo/catalog";
 import { PageHeader, OrderStatusBadge } from "@/components/ui";
 import { formatDate } from "@/lib/format";
 
@@ -29,7 +29,7 @@ export default async function Orders({ params }: { params: Promise<{ locale: str
           return (
             <Link key={o.id} href={`/${l}/orders/${o.id}`} className="order-row">
               <div className="order-row-main">
-                <span className="order-row-num">{o.order_number} · {formatDate(o.created_at)}</span>
+                <span className="order-row-num">{o.order_number} · {formatDate(orderCreatedISO(o))}</span>
                 <span className="order-row-title">{service?.name}</span>
                 <span className="order-row-meta">{provider?.name} · {money(o.amount, o.currency)}</span>
               </div>

@@ -16,7 +16,7 @@ const LABELS: Record<OrderStatus, Label> = {
   paid:                    { en: "Paid", zh: "已付款", tone: "success" },
   accepted:                { en: "Accepted", zh: "已接单", tone: "info" },
   in_progress:             { en: "In progress", zh: "进行中", tone: "info" },
-  evidence_submitted:      { en: "Evidence submitted", zh: "已提交凭证", tone: "info" },
+  evidence_submitted:      { en: "Evidence submitted", zh: "已提交完成记录", tone: "info" },
   under_review:            { en: "Under review", zh: "审核中", tone: "warning" },
   completed:               { en: "Completed", zh: "已完成", tone: "success" },
   cancelled:               { en: "Cancelled", zh: "已取消", tone: "muted" },

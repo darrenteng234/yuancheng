@@ -27,7 +27,7 @@ export const zh: Dictionary = {
   },
   home: {
     heroTitle: '愿成',
-    heroSubtitle: '诚心代拜与服务，由我们代为完成——每笔订单都附有照片与视频凭证。',
+    heroSubtitle: '诚心代拜与服务，由我们代为完成——每笔订单都附有照片与视频记录。',
     ctaDiscover: '服务流程',
     ctaProvider: '成为服务商',
     featureFulfilment: '可信履约',
@@ -44,13 +44,13 @@ export const zh: Dictionary = {
       { title: '选择服务', body: '在服务商店铺中选择服务与规格。' },
       { title: '安全付款', body: '通过 Stripe 结账，金额由服务商设定。' },
       { title: '代为完成', body: '由独立服务商代您完成，并提交完成记录。' },
-      { title: '查看凭证', body: '上传照片与视频，审核后方可完成。' },
+      { title: "查看完成记录", body: '上传照片与视频，审核后方可完成。' },
     ],
   },
   faq: {
     title: '常见问题',
     items: [
-      { q: '如何确认订单已完成？', a: '每笔订单都附有照片/视频凭证，审核通过后才标记完成。' },
+      { q: '如何确认订单已完成？', a: '每笔订单都附有照片/视频记录，审核通过后才标记完成。' },
       { q: '如何追踪订单？', a: '使用结账后显示的安全追踪链接，无需注册。' },
       { q: '可以退款吗？', a: '可以，视退款政策而定。请附上订单编号联系我们。' },
       { q: '保证结果吗？', a: '我们协助完成寺庙相关事务，但不保证任何宗教或灵性结果。' },
@@ -76,7 +76,7 @@ export const zh: Dictionary = {
       paid: '已付款',
       accepted: '已接单',
       in_progress: '进行中',
-      evidence_submitted: '已提交凭证',
+      evidence_submitted: "已提交完成记录",
       under_review: '审核中',
       completed: '已完成',
       cancelled: '已取消',

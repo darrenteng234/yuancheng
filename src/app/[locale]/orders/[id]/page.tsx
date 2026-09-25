@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { isLocale } from "@/lib/i18n";
 import type { Locale, OrderStatus } from "@/types/platform";
-import { getOrder, getService, getProvider, getPlace, getPackage, money, DEMO_PAYMENT_METHOD } from "@/lib/demo/catalog";
+import { getOrder, getService, getProvider, getPlace, getPackage, money, DEMO_PAYMENT_METHOD, orderCreatedISO, orderUploadedISO } from "@/lib/demo/catalog";
 import { OrderStatusBadge } from "@/components/ui";
 import { formatDate } from "@/lib/format";
 import { verifyDeadlineLabel, waLink, verifyChaseMessage, DEMO_PROVIDER_WHATSAPP, SUPPORT_WHATSAPP } from "@/lib/demo/contact";
@@ -13,7 +13,7 @@ import { Timeline, EvidenceGallery, PaymentMethodCard, type TimelineStep } from 
 function buildTimeline(status: string, zh: boolean): TimelineStep[] {
   const order = ["payment_proof_submitted", "paid", "accepted", "in_progress", "evidence_submitted", "completed"];
   const labels: Record<string, string> = zh
-    ? { payment_proof_submitted: "付款审核中", paid: "已付款", accepted: "已接单", in_progress: "进行中", evidence_submitted: "已提交凭证", completed: "已完成" }
+    ? { payment_proof_submitted: "付款审核中", paid: "已付款", accepted: "已接单", in_progress: "进行中", evidence_submitted: "已提交完成记录", completed: "已完成" }
     : { payment_proof_submitted: "Payment under review", paid: "Paid", accepted: "Accepted", in_progress: "In progress", evidence_submitted: "Evidence submitted", completed: "Completed" };
   const idx = order.indexOf(status === "completed" ? "completed" : status);
   const currentIdx = idx === -1 ? 0 : idx;
@@ -59,7 +59,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
             <dl className="pay-method-grid">
               <div><dt>{zh ? "套餐" : "Package"}</dt><dd>{pkg?.name}</dd></div>
               <div><dt>{zh ? "金额" : "Amount"}</dt><dd>{money(order.amount, order.currency)}</dd></div>
-              <div><dt>{zh ? "下单日期" : "Created"}</dt><dd>{formatDate(order.created_at)}</dd></div>
+              <div><dt>{zh ? "下单日期" : "Created"}</dt><dd>{formatDate(orderCreatedISO(order))}</dd></div>
               <div><dt>{zh ? "代办" : "Fulfilment"}</dt><dd>{zh ? "服务商代办" : "Provider"}</dd></div>
             </dl>
             <div style={{ marginTop: "var(--space-4)" }}>
@@ -76,8 +76,8 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
               <>
                 <div className="banner-review" style={{ marginTop: "var(--space-4)" }}>
                   {zh
-                    ? `服务商将在 24 小时内核实（${verifyDeadlineLabel(order.created_at + "T10:32:00+08:00", zh ? "zh" : "en")} 前）。上传收据不代表已核实付款。`
-                    : `The provider will verify within 24 hours (by ${verifyDeadlineLabel(order.created_at + "T10:32:00+08:00", zh ? "zh" : "en")}). Uploading a receipt does not mean payment is verified.`}
+                    ? `服务商将在 24 小时内核实（${verifyDeadlineLabel(orderUploadedISO(order), zh ? "zh" : "en")} 前）。上传收据不代表已核实付款。`
+                    : `The provider will verify within 24 hours (by ${verifyDeadlineLabel(orderUploadedISO(order), zh ? "zh" : "en")}). Uploading a receipt does not mean payment is verified.`}
                 </div>
                 <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap", marginTop: "var(--space-3)" }}>
                   <a className="btn btn-secondary btn-sm" href={waLink(DEMO_PROVIDER_WHATSAPP, verifyChaseMessage(order.order_number, zh ? "zh" : "en"))} target="_blank" rel="noreferrer">
@@ -93,7 +93,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
 
           {/* Evidence */}
           <div className="checkout-step">
-            <h2>{zh ? "完成凭证" : "Completion evidence"}</h2>
+            <h2>{zh ? "完成记录" : "Completion evidence"}</h2>
             <EvidenceGallery items={order.evidence} locale={l} />
           </div>
         </div>
@@ -104,7 +104,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
           <Timeline steps={buildTimeline(order.status, zh)} />
           {isCompleted ? (
             <div style={{ marginTop: "var(--space-5)", padding: "var(--space-4)", background: "var(--color-success-bg)", color: "var(--color-success)", borderRadius: "var(--radius-md)", fontSize: "var(--text-sm)", fontWeight: 500 }}>
-              {zh ? "此订单已完成，凭证已备妥。" : "This order is complete and evidence is available."}
+              {zh ? "此订单已完成，记录已备妥。" : "This order is complete and evidence is available."}
             </div>
           ) : null}
         </aside>

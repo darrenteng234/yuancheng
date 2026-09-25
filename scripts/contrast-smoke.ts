@@ -5,7 +5,7 @@ function lum(hex: string) { const h = hex.replace("#", ""); const r = parseInt(h
 function ratio(a: string, b: string) { const L1 = lum(a), L2 = lum(b); const hi = Math.max(L1,L2), lo = Math.min(L1,L2); return (hi + 0.05) / (lo + 0.05); }
 
 const C = {
-  ink: "#1F2A24", muted: "#5F6761", white: "#FFFFFF", ivory: "#F7F4EE", ivory2: "#F1EDE4", ivoryHover: "#EFEBE1",
+  ink: "#2B211B", muted: "#655A50", white: "#FFFFFF", ivory: "#F7F4EE", ivory2: "#F1EDE4", ivoryHover: "#EFEBE1",
   sandalwood: "#5A3A22", primaryBg: "#F3EBE3",
   success: "#2E6B55", successBg: "#E7F0EB", warning: "#8A5A1F", warningBg: "#F7EEDD",
   error: "#9A3B3B", errorBg: "#F7E9E7", info: "#43627A", infoBg: "#E8EFF3",

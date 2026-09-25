@@ -77,7 +77,7 @@ export async function sendRunnerAssignmentEmail(p: {
       <tr><td style="padding:12px 16px;border-bottom:1px solid #e8dcc8;"><strong>客户</strong></td><td style="padding:12px 16px;">${p.customerName}</td></tr>
       <tr><td style="padding:12px 16px;"><strong>特别指示</strong></td><td style="padding:12px 16px;">${p.specialInstructions || "无 / None"}</td></tr>
       </table>
-      <p>请在接单后尽快前往寺庙完成祈愿服务。完成后请上传凭证照片和视频。</p>
+      <p>请在接单后尽快前往寺庙完成祈愿服务。完成后请上传完成记录（照片和视频）。</p>
       <p><a href="${siteUrl}/runner/orders/${p.orderId}" style="display:inline-block;background:#b8860b;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">查看任务详情</a></p>`
     : `<p>You have a new assignment. Here are the details:</p>
       <table style="width:100%;background:#fff;border-radius:8px;border:1px solid #e8dcc8;margin:16px 0;">
@@ -107,7 +107,7 @@ export async function sendOrderConfirmation(p: {
       <tr><td style="padding:12px 16px;border-bottom:1px solid #e8dcc8;"><strong>配套</strong></td><td style="padding:12px 16px;">${p.packageName}</td></tr>
       <tr><td style="padding:12px 16px;"><strong>金额</strong></td><td style="padding:12px 16px;color:#b8860b;font-weight:700;">RM${p.amount.toFixed(2)}</td></tr>
       </table>
-      <p>执行人将尽快前往寺庙完成您的祈愿。完成后我们会发送凭证照片和视频给您。</p>
+      <p>执行人将尽快前往寺庙完成您的祈愿。完成后我们会发送完成记录（照片和视频）给您。</p>
       <p><a href="${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3002"}/orders/${p.orderId}" style="display:inline-block;background:#b8860b;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">查看订单状态</a></p>`
     : `<p>Thank you for your trust. We've received your order and are assigning a runner.</p>
       <table style="width:100%;background:#fff;border-radius:8px;border:1px solid #e8dcc8;margin:16px 0;">

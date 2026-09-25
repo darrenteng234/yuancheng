@@ -19,10 +19,14 @@ const en = {
   dash: {
     greeting: "Good day", verified: "Verified provider",
     needsAttention: "Needs attention", nothing: "Nothing needs your attention right now.",
-    proofReview: "Payment proof awaiting review", readyAccept: "Order ready to accept", inProgress: "Fulfilment in progress",
+    proofReview: "Payment receipt awaiting review", readyAccept: "Order ready to accept", inProgress: "Fulfilment in progress",
     thisWeek: "This week", orders: "Orders", completed: "Completed", orderValue: "Order value",
     quickActions: "Quick actions", createService: "Create service", viewOrders: "View orders", editStorefront: "Edit storefront",
     catalog: "Catalog", activeServices: "Active services", products: "Products", plan: "Plan", freeBeta: "Free (beta)",
+    needsTitle: "{n} orders need you", checkReceipt: "Check a payment receipt", review: "Review",
+    emptyAttention: "Nothing is waiting. New orders appear here first.",
+    orderValueCaption: "Verified payments only, paid directly to you. 0% commission during beta.",
+    identityVerified: "Identity verified", physicalVerified: "Physical location verified",
   },
   orders: {
     title: "Orders", subtitle: "Review requests, verify payments, and fulfil orders.",
@@ -49,7 +53,7 @@ const en = {
     actions: {
       verify_payment: "Verify payment", reject_receipt: "Reject receipt", accept_order: "Accept order",
       start_fulfilment: "Start fulfilment", submit_evidence: "Submit evidence", complete_order: "Complete order",
-      cant_fulfil: "Can't fulfil this order", mark_refund_sent: "Mark refund as sent", upload_proof: "Upload payment proof",
+      cant_fulfil: "Can't fulfil this order", mark_refund_sent: "Mark refund as sent", upload_proof: "Upload receipt",
     },
     steps: {
       proofSubmitted: "Receipt submitted", paymentVerified: "Payment verified", accepted: "Accepted",
@@ -133,10 +137,14 @@ const zh: typeof en = {
   dash: {
     greeting: "您好", verified: "已核实服务商",
     needsAttention: "待处理事项", nothing: "目前没有待处理事项。",
-    proofReview: "待审核的付款凭据", readyAccept: "可接单的订单", inProgress: "执行中的订单",
+    proofReview: "待审核的付款收据", readyAccept: "可接单的订单", inProgress: "执行中的订单",
     thisWeek: "本周", orders: "订单", completed: "已完成", orderValue: "订单金额",
     quickActions: "快捷操作", createService: "创建服务", viewOrders: "查看订单", editStorefront: "编辑店铺",
     catalog: "目录", activeServices: "在架服务", products: "商品", plan: "方案", freeBeta: "免费（测试版）",
+    needsTitle: "有 {n} 个订单需要您处理", checkReceipt: "查看付款收据", review: "查看",
+    emptyAttention: "暂无待处理。新订单会最先显示在这里。",
+    orderValueCaption: "仅统计已确认的付款，直接支付给您。测试版期间 0% 佣金。",
+    identityVerified: "身份已核实", physicalVerified: "实体地点已核实",
   },
   orders: {
     title: "订单", subtitle: "审核请求、确认收款并完成订单。",
@@ -163,7 +171,7 @@ const zh: typeof en = {
     actions: {
       verify_payment: "确认收款", reject_receipt: "退回收据", accept_order: "接单",
       start_fulfilment: "开始执行", submit_evidence: "提交完成记录", complete_order: "完成订单",
-      cant_fulfil: "无法完成此订单", mark_refund_sent: "标记为已退款", upload_proof: "上传付款凭据",
+      cant_fulfil: "无法完成此订单", mark_refund_sent: "标记为已退款", upload_proof: "上传收据",
     },
     steps: {
       proofSubmitted: "已提交收据", paymentVerified: "已确认收款", accepted: "已接单",

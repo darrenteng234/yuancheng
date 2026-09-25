@@ -25,7 +25,7 @@ export function EvidenceGallery({
 }: { items: { type: "photo" | "video"; url: string; label?: string }[]; locale?: string; disclaimer?: boolean }) {
   const zh = locale === "zh";
   if (!items.length) {
-    return <p className="text-muted" style={{ fontSize: "var(--text-sm)" }}>{zh ? "尚未提交凭证。" : "Evidence has not been submitted yet."}</p>;
+    return <p className="text-muted" style={{ fontSize: "var(--text-sm)" }}>{zh ? "尚未提交完成记录。" : "Evidence has not been submitted yet."}</p>;
   }
   return (
     <div>
@@ -43,7 +43,7 @@ export function EvidenceGallery({
       </div>
       {disclaimer ? (
         <p className="evidence-disclaimer"><Info size={14} /> {zh
-          ? "完成凭证记录服务商所提交的内容，并非宗教或精神结果的保证。"
+          ? "完成记录仅记录服务商所提交的内容，并非宗教或精神结果的保证。"
           : EVIDENCE_DISCLAIMER}</p>
       ) : null}
     </div>

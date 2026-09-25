@@ -7,7 +7,7 @@ import type { OrderStatus } from "@/types/platform";
 import { orderActions, type OrderAction } from "@/lib/domain/order";
 import { statusLabel, statusTone } from "@/lib/status";
 import { formatMoney, formatDate, formatDateTime } from "@/lib/format";
-import { getOrder, getService, getPackage, getPlace, DEMO_PAYMENT_METHOD } from "@/lib/demo/catalog";
+import { getOrder, getService, getPackage, getPlace, DEMO_PAYMENT_METHOD, orderCreatedISO, orderUploadedISO } from "@/lib/demo/catalog";
 import { Timeline, EvidenceGallery, PaymentMethodCard, type TimelineStep } from "@/components/order/OrderParts";
 import { NotFoundState } from "@/components/ui";
 import { useProviderT } from "@/components/layout/ProviderShell";
@@ -69,7 +69,7 @@ export default function ProviderOrderDetail() {
   const danger = actions.find((a) => a.kind === "danger") ?? null;
   const money = formatMoney(base.amount, base.currency);
   const evLabel = pkg?.evidence === "photo_video" ? od.photoVideo : pkg?.evidence === "photo" ? od.photo : od.none;
-  const uploadedISO = `${base.created_at}T10:32:00+08:00`;
+  const uploadedISO = orderUploadedISO(base);
   const overdue = isOverdue(uploadedISO);
   const deadlineLabel = verifyDeadlineLabel(uploadedISO, lang);
 
@@ -101,7 +101,7 @@ export default function ProviderOrderDetail() {
         <dl className="pay-method-grid" style={{ flex: 1 }}>
           <div><dt>{od.amountDue}</dt><dd>{money}</dd></div>
           <div><dt>{od.reference}</dt><dd>{base.order_number}</dd></div>
-          <div><dt>{od.uploaded}</dt><dd>{formatDateTime(base.created_at + "T10:32:00", lang)}</dd></div>
+          <div><dt>{od.uploaded}</dt><dd>{formatDateTime(uploadedISO, lang)}</dd></div>
           <div><dt>{od.method}</dt><dd>{DEMO_PAYMENT_METHOD.bank_name}</dd></div>
         </dl>
       </div>
@@ -183,7 +183,7 @@ export default function ProviderOrderDetail() {
   const paymentFullBlock = <section className="checkout-step" key="paymentFull"><h2>{od.paymentDetails}</h2><PaymentMethodCard method={DEMO_PAYMENT_METHOD} locale={lang} /></section>;
   const paymentCollapsedBlock = (
     <section className="checkout-step" key="paymentCollapsed"><h2>{od.payment}</h2>
-      <div className="sbadge sbadge--success"><ShieldCheck size={14} /> {fill(od.verifiedSummary, { amount: money, date: formatDate(base.created_at, lang) })}</div>
+      <div className="sbadge sbadge--success"><ShieldCheck size={14} /> {fill(od.verifiedSummary, { amount: money, date: formatDate(orderCreatedISO(base), lang) })}</div>
     </section>
   );
   const evidenceBlock = <section className="checkout-step" key="evidence"><h2>{od.completionEvidence}</h2><EvidenceGallery items={evidence} locale={lang} /></section>;

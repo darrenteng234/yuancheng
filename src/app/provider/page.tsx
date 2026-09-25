@@ -1,60 +1,88 @@
 import Link from "next/link";
-import { ShieldCheck, Plus, ClipboardList, Store, ArrowRight } from "lucide-react";
-import { DEMO_ORDERS, DEMO_SERVICES, DEMO_PRODUCTS, money } from "@/lib/demo/catalog";
-import { PageHeader } from "@/components/ui";
+import { ShieldCheck, Plus, ClipboardList, Store, Receipt } from "lucide-react";
+import { DEMO_ORDERS, DEMO_SERVICES, DEMO_PRODUCTS, getService, money, orderUploadedISO } from "@/lib/demo/catalog";
 import { providerLang } from "@/lib/i18n/provider-lang";
-import { getProviderDict } from "@/lib/i18n/provider";
-import { isOverdue } from "@/lib/demo/contact";
+import { getProviderDict, fill } from "@/lib/i18n/provider";
+import { isOverdue, verifyDeadlineLabel } from "@/lib/demo/contact";
+import { formatDate } from "@/lib/format";
 
 const PROVIDER_NAME = "Golden Lotus Services";
+const WD_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const WD_ZH = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+// Payment is verified once the order is at/after "paid".
+const VERIFIED: string[] = ["paid", "accepted", "in_progress", "evidence_submitted", "under_review", "completed"];
 
 export default async function ProviderDashboard() {
   const lang = await providerLang();
-  const dict = getProviderDict(lang);
-  const t = dict.dash;
-  const proofReview = DEMO_ORDERS.filter((o) => o.status === "payment_proof_submitted");
-  const readyAccept = DEMO_ORDERS.filter((o) => o.status === "paid");
-  const inProgress = DEMO_ORDERS.filter((o) => o.status === "in_progress" || o.status === "accepted");
-  const completed = DEMO_ORDERS.filter((o) => o.status === "completed");
-  const revenue = completed.reduce((s, o) => s + o.amount, 0);
+  const t = getProviderDict(lang).dash;
+  const zh = lang === "zh";
 
-  const proofOverdue = proofReview.some((o) => isOverdue(`${o.created_at}T10:32:00+08:00`));
-  const attention = [
-    proofReview.length ? { n: proofReview.length, label: t.proofReview, href: `/provider/orders/${proofReview[0].id}`, overdue: proofOverdue } : null,
-    readyAccept.length ? { n: readyAccept.length, label: t.readyAccept, href: "/provider/orders?f=paid", overdue: false } : null,
-    inProgress.length ? { n: inProgress.length, label: t.inProgress, href: "/provider/orders?f=progress", overdue: false } : null,
-  ].filter(Boolean) as { n: number; label: string; href: string; overdue: boolean }[];
+  const kl = new Date(Date.now() + 8 * 3600000);
+  const wd = zh ? WD_ZH[kl.getUTCDay()] : WD_EN[kl.getUTCDay()];
+  const dateLine = zh ? `${formatDate(new Date(), "zh")} ${wd}` : `${wd}, ${formatDate(new Date())}`;
+
+  const proofReview = DEMO_ORDERS.filter((o) => o.status === "payment_proof_submitted")
+    .sort((a, b) => Number(isOverdue(orderUploadedISO(b))) - Number(isOverdue(orderUploadedISO(a))));
+  const completed = DEMO_ORDERS.filter((o) => o.status === "completed");
+  const verifiedValue = DEMO_ORDERS.filter((o) => VERIFIED.includes(o.status)).reduce((s, o) => s + o.amount, 0);
 
   return (
     <div style={{ padding: "var(--space-6)", maxWidth: 1000, margin: "0 auto" }}>
-      <PageHeader title={t.greeting} subtitle={PROVIDER_NAME}
-        actions={<span className="sbadge sbadge--success"><ShieldCheck size={14} /> {t.verified}</span>} />
+      <div className="page-header">
+        <div>
+          <div className="text-muted" style={{ fontSize: "var(--text-sm)", marginBottom: 4 }}>{dateLine}</div>
+          <h1 style={{ fontSize: "var(--text-3xl)", fontWeight: 600 }}>{PROVIDER_NAME}</h1>
+        </div>
+        <div className="page-header-actions" style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
+          <span className="sbadge sbadge--success"><ShieldCheck size={13} /> {t.identityVerified}</span>
+          <span className="sbadge sbadge--success"><ShieldCheck size={13} /> {t.physicalVerified}</span>
+        </div>
+      </div>
 
+      {/* Needs attention — one row per order */}
       <section style={{ marginBottom: "var(--space-8)" }}>
-        <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: "var(--space-4)" }}>{t.needsAttention}</h2>
-        {attention.length === 0 ? (
-          <p className="text-muted">{t.nothing}</p>
+        <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: "var(--space-4)" }}>{fill(t.needsTitle, { n: String(proofReview.length) })}</h2>
+        {proofReview.length === 0 ? (
+          <div className="metric-card"><p className="text-muted">{t.emptyAttention}</p></div>
         ) : (
           <div className="needs-attention">
-            {attention.map((a, i) => (
-              <Link key={i} href={a.href} className="na-item">
-                <span style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>{a.label}{a.overdue ? <span className="sbadge sbadge--warning">{dict.od.overdue}</span> : null}</span>
-                <span style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}><span className="na-count">{a.n}</span><ArrowRight size={16} style={{ color: "var(--color-text-muted)" }} /></span>
-              </Link>
-            ))}
+            {proofReview.map((o) => {
+              const overdue = isOverdue(orderUploadedISO(o));
+              const service = getService(o.serviceSlug);
+              return (
+                <div key={o.id} className="na-row">
+                  <Receipt size={18} style={{ color: "var(--color-primary)", flex: "none" }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600 }}>{t.checkReceipt}</div>
+                    <div className="text-muted" style={{ fontSize: "var(--text-sm)" }}>{o.order_number} · {service?.name} · {o.customer_name}</div>
+                    <div style={{ fontSize: "var(--text-sm)", marginTop: 2 }}>
+                      {money(o.amount, o.currency)} · {overdue
+                        ? <span className="sbadge sbadge--warning">{getProviderDict(lang).od.overdue}</span>
+                        : <span className="text-muted">{fill(getProviderDict(lang).od.verifyBy, { deadline: verifyDeadlineLabel(orderUploadedISO(o), lang) })}</span>}
+                    </div>
+                  </div>
+                  <Link href={`/provider/orders/${o.id}`} className="btn btn-primary btn-sm" style={{ flex: "none" }}>{t.review}</Link>
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
 
+      {/* This week */}
       <section style={{ marginBottom: "var(--space-8)" }}>
         <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: "var(--space-4)" }}>{t.thisWeek}</h2>
         <div className="metric-grid">
           <div className="metric-card"><div className="m-val">{DEMO_ORDERS.length}</div><div className="m-label">{t.orders}</div></div>
           <div className="metric-card"><div className="m-val">{completed.length}</div><div className="m-label">{t.completed}</div></div>
-          <div className="metric-card"><div className="m-val">{money(revenue)}</div><div className="m-label">{t.orderValue}</div></div>
+          <div className="metric-card">
+            <div className="m-val">{money(verifiedValue)}</div><div className="m-label">{t.orderValue}</div>
+            <div className="text-muted" style={{ fontSize: "var(--text-xs)", marginTop: 6 }}>{t.orderValueCaption}</div>
+          </div>
         </div>
       </section>
 
+      {/* Quick actions */}
       <section style={{ marginBottom: "var(--space-8)" }}>
         <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: "var(--space-4)" }}>{t.quickActions}</h2>
         <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap" }}>
@@ -64,6 +92,7 @@ export default async function ProviderDashboard() {
         </div>
       </section>
 
+      {/* Catalog */}
       <section>
         <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: "var(--space-4)" }}>{t.catalog}</h2>
         <div className="metric-card">

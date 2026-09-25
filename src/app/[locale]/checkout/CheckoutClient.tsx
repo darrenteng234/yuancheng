@@ -41,7 +41,7 @@ export default function CheckoutClient() {
       <div className="container section" style={{ maxWidth: 640 }}>
         <div className="checkout-step" style={{ textAlign: "center" }}>
           <CheckCircle2 size={40} style={{ color: "var(--color-warning)", margin: "0 auto var(--space-3)" }} />
-          <h2 style={{ justifyContent: "center" }}>{zh ? "付款凭证已提交" : "Payment proof submitted"}</h2>
+          <h2 style={{ justifyContent: "center" }}>{zh ? "收据已提交" : "Receipt submitted"}</h2>
           <p className="text-muted" style={{ marginBottom: "var(--space-5)" }}>
             {zh ? "上传收据并不代表付款已核实。服务商将审核并确认您的付款。"
                 : "Uploading your receipt does not mean payment has been verified. The provider will review and confirm your payment."}
@@ -114,7 +114,7 @@ export default function CheckoutClient() {
 
           {/* 4. Payment proof */}
           <div className="checkout-step">
-            <h2><span className="step-num">4</span> {zh ? "上传付款凭证" : "Upload payment proof"}</h2>
+            <h2><span className="step-num">4</span> {zh ? "上传收据" : "Upload receipt"}</h2>
             <div className="banner-review" style={{ marginBottom: "var(--space-4)" }}>
               <Info size={16} style={{ flex: "none", marginTop: 1 }} />
               {zh ? "先直接向服务商付款，然后在此上传收据。" : "Pay the provider directly first, then upload your receipt here."}
@@ -127,7 +127,7 @@ export default function CheckoutClient() {
             <button className="btn btn-primary btn-lg btn-full" style={{ marginTop: "var(--space-5)" }}
               disabled={!canPay || !proofName}
               onClick={() => setSubmitted(true)}>
-              {zh ? "我已付款，提交凭证" : "I’ve made the payment — submit proof"}
+              {zh ? "我已付款，提交收据" : "I’ve made the payment — submit receipt"}
             </button>
             {!canPay ? <p className="field-count" style={{ textAlign: "center" }}>{zh ? "请先填写姓名、地点与请求。" : "Fill in name, location and request first."}</p> : null}
           </div>
@@ -141,7 +141,7 @@ export default function CheckoutClient() {
           <div className="summary-row"><span>{zh ? "服务商" : "Provider"}</span><span>{provider?.name}</span></div>
           {place ? <div className="summary-row"><span>{zh ? "场所" : "Place"}</span><span>{place.name}</span></div> : null}
           <div className="summary-row"><span>{zh ? "代办" : "Fulfilment"}</span><span>{zh ? "服务商代办" : "Provider"}</span></div>
-          <div className="summary-row"><span>{zh ? "凭证" : "Evidence"}</span><span>{pkg.evidence === "photo_video" ? (zh ? "照片+视频" : "Photo+video") : pkg.evidence === "photo" ? (zh ? "照片" : "Photo") : (zh ? "无" : "None")}</span></div>
+          <div className="summary-row"><span>{zh ? "完成记录" : "Evidence"}</span><span>{pkg.evidence === "photo_video" ? (zh ? "照片+视频" : "Photo+video") : pkg.evidence === "photo" ? (zh ? "照片" : "Photo") : (zh ? "无" : "None")}</span></div>
           <div className="summary-total"><span>{zh ? "总计" : "Total"}</span><span>{money(amount, pkg.currency)}</span></div>
           <p className="text-muted" style={{ fontSize: "var(--text-xs)", marginTop: "var(--space-4)" }}>
             {zh ? "第一阶段：直接向服务商付款。愿成不代收款项。" : "Stage 1: you pay the provider directly. Yuancheng does not collect the funds."}
