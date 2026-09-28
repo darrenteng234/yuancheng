@@ -136,7 +136,7 @@ export const DEMO_PAYMENT_METHOD = {
 // ── Demo orders (fixtures). Timestamps are RELATIVE to now so the demo never
 // goes stale: created_at derives from createdDaysAgo, and the receipt-upload time
 // (for verify deadlines) derives from uploadedHoursAgo, both computed at render. ──
-export type DemoEvidence = { type: "photo" | "video"; url: string; label: string };
+export type DemoEvidence = { type: "photo" | "video"; url: string; label: { en: string; zh: string } };
 export interface DemoOrder {
   id: string; order_number: string; serviceSlug: string; packageId: string; providerSlug: string;
   status: OrderStatus; amount: number; currency: string;
@@ -168,9 +168,9 @@ export const DEMO_ORDERS: DemoOrder[] = [
     customer_request: "Offering with photo and video, in memory of my grandfather.",
     customer_phone: "60128889999",
     evidence: [
-      { type: "photo", url: "https://picsum.photos/seed/yuancheng1/900/700", label: "Offering placed" },
-      { type: "photo", url: "https://picsum.photos/seed/yuancheng2/900/700", label: "At the altar" },
-      { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", label: "Ceremony clip" },
+      { type: "photo", url: "/demo/evidence-placeholder.svg", label: { en: "Offering placed", zh: "供品已摆放" } },
+      { type: "photo", url: "/demo/evidence-placeholder.svg", label: { en: "At the altar", zh: "于祭坛前" } },
+      { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", label: { en: "Ceremony clip", zh: "仪式片段" } },
     ],
   },
 ];

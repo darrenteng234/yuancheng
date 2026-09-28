@@ -37,7 +37,7 @@ export async function middleware(req: NextRequest) {
   // Provider login/apply pages are public. In DEMO mode (beta investor demo) the
   // fixture-backed provider portal is viewable without a session; it exposes no
   // real records and performs no writes.
-  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE?.toLowerCase() === "true";
   if (
     !demoMode &&
     req.nextUrl.pathname.startsWith("/provider") &&

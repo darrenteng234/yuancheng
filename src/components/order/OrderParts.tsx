@@ -22,8 +22,9 @@ export function Timeline({ steps }: { steps: TimelineStep[] }) {
 /** Private completion evidence. Photos + video, with the required disclaimer. */
 export function EvidenceGallery({
   items, locale = "en", disclaimer = true,
-}: { items: { type: "photo" | "video"; url: string; label?: string }[]; locale?: string; disclaimer?: boolean }) {
+}: { items: { type: "photo" | "video"; url: string; label?: string | { en: string; zh: string } }[]; locale?: string; disclaimer?: boolean }) {
   const zh = locale === "zh";
+  const lbl = (l?: string | { en: string; zh: string }) => (typeof l === "object" && l ? (zh ? l.zh : l.en) : l);
   if (!items.length) {
     return <p className="text-muted" style={{ fontSize: "var(--text-sm)" }}>{zh ? "尚未提交完成记录。" : "Evidence has not been submitted yet."}</p>;
   }
@@ -35,8 +36,8 @@ export function EvidenceGallery({
             <video key={i} className="evidence-media" controls preload="metadata" src={e.url} />
           ) : (
             <a key={i} href={e.url} target="_blank" rel="noreferrer" className="evidence-media-wrap">
-              <img className="evidence-media" src={e.url} alt={e.label ?? "Evidence"} />
-              <span className="evidence-tag"><Camera size={12} /> {e.label}</span>
+              <img className="evidence-media" src={e.url} alt={lbl(e.label) ?? "Evidence"} />
+              <span className="evidence-tag"><Camera size={12} /> {lbl(e.label)}</span>
             </a>
           )
         )}

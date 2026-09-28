@@ -39,7 +39,7 @@ export default function ProviderOrderDetail() {
   const id = (params?.id as string) || "";
   const base = getOrder(id);
   const [status, setStatus] = React.useState<OrderStatus>(base?.status ?? "paid");
-  const [evidence, setEvidence] = React.useState(base?.evidence ?? []);
+  const [evidence, setEvidence] = React.useState<{ type: "photo" | "video"; url: string; label: string | { en: string; zh: string } }[]>(base?.evidence ?? []);
   const [dialog, setDialog] = React.useState<null | "cantfulfil" | "reject">(null);
   const [reason, setReason] = React.useState("");
   const [receiptOpen, setReceiptOpen] = React.useState(false);
@@ -69,21 +69,23 @@ export default function ProviderOrderDetail() {
   const danger = actions.find((a) => a.kind === "danger") ?? null;
   const money = formatMoney(base.amount, base.currency);
   const evLabel = pkg?.evidence === "photo_video" ? od.photoVideo : pkg?.evidence === "photo" ? od.photo : od.none;
+  const requiresPhoto = pkg?.evidence === "photo" || pkg?.evidence === "photo_video";
+  const hasPhoto = evidence.some((e) => e.type === "photo");
+  const canSubmitEvidence = !requiresPhoto || hasPhoto;
+  const primaryDisabled = status === "in_progress" && !canSubmitEvidence;
   const uploadedISO = orderUploadedISO(base);
   const overdue = isOverdue(uploadedISO);
   const deadlineLabel = verifyDeadlineLabel(uploadedISO, lang);
 
   function runPrimary(to: OrderStatus) {
-    if (to === "evidence_submitted" && evidence.length === 0) {
-      setEvidence([{ type: "photo", url: "https://picsum.photos/seed/prov1/800/600", label: "Fulfilment photo" }]);
-    }
+    if (to === "evidence_submitted" && !canSubmitEvidence) return;
     setStatus(to);
   }
   function openDanger() { if (danger) setDialog(danger.to === "payment_failed" ? "reject" : "cantfulfil"); }
   function confirmDialog(to: OrderStatus) { if (!reason.trim()) return; setStatus(to); setDialog(null); setReason(""); }
 
   const PrimaryBtn = () => primary ? (
-    <button className="btn btn-primary btn-full action-inline-primary" onClick={() => runPrimary(primary.to)}>{A(primary)}</button>
+    <button className="btn btn-primary btn-full action-inline-primary" disabled={primaryDisabled} onClick={() => runPrimary(primary.to)}>{A(primary)}</button>
   ) : null;
   const DangerText = () => danger ? (
     <button className="btn-textlink-danger" onClick={openDanger}>{A(danger)}</button>
@@ -131,10 +133,11 @@ export default function ProviderOrderDetail() {
       <h2>{od.submitEvidenceTitle}</h2>
       <p className="text-muted" style={{ fontSize: "var(--text-sm)", marginBottom: "var(--space-4)" }}>{fill(od.requiredLine, { ev: evLabel })}</p>
       <div style={{ display: "flex", gap: "var(--space-2)", marginBottom: "var(--space-4)", flexWrap: "wrap" }}>
-        <button className="btn btn-secondary btn-sm" onClick={() => setEvidence((e) => [...e, { type: "photo", url: "https://picsum.photos/seed/prov" + e.length + "/800/600", label: "Photo" }])}>{od.addPhoto}</button>
-        <button className="btn btn-secondary btn-sm" onClick={() => setEvidence((e) => [...e, { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", label: "Video" }])}>{od.addVideo}</button>
+        <button className="btn btn-secondary btn-sm" onClick={() => setEvidence((e) => [...e, { type: "photo", url: "/demo/evidence-placeholder.svg", label: od.demoPhoto }])}>{od.addPhoto}</button>
+        <button className="btn btn-secondary btn-sm" onClick={() => setEvidence((e) => [...e, { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", label: od.demoVideo }])}>{od.addVideo}</button>
       </div>
       {evidence.length ? <div style={{ marginBottom: "var(--space-4)" }}><EvidenceGallery items={evidence} locale={lang} disclaimer={false} /></div> : null}
+      {primaryDisabled ? <p className="text-muted" style={{ fontSize: "var(--text-sm)", marginBottom: "var(--space-2)" }}>{od.addPhotoHint}</p> : null}
       <PrimaryBtn />
       {danger ? <div style={{ marginTop: "var(--space-3)", textAlign: "center" }}><DangerText /></div> : null}
     </section>
@@ -226,7 +229,7 @@ export default function ProviderOrderDetail() {
 
       {primary ? (
         <div className="order-actionbar">
-          <button className="btn btn-primary btn-full" onClick={() => runPrimary(primary.to)}>{A(primary)}</button>
+          <button className="btn btn-primary btn-full" disabled={primaryDisabled} onClick={() => runPrimary(primary.to)}>{A(primary)}</button>
         </div>
       ) : null}
 
