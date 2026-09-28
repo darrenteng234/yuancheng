@@ -2,8 +2,10 @@
 import { formatDateTime } from "@/lib/format";
 import type { Lang } from "@/lib/format";
 
-export const SUPPORT_WHATSAPP = "60111111111"; // placeholder Yuancheng support number
-export const DEMO_PROVIDER_WHATSAPP = "60127770000"; // demo provider (Golden Lotus) contact
+// Deliberately non-dialable fake number: demo mode never opens wa.me (buttons
+// show an in-page preview sheet instead), so no real number sits in the repo.
+export const SUPPORT_WHATSAPP = "60000000000";
+export const DEMO_PROVIDER_WHATSAPP = "60000000000";
 
 const VERIFY_HOURS = 24;
 

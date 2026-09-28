@@ -8,12 +8,13 @@ import { orderActions, type OrderAction } from "@/lib/domain/order";
 import { statusLabel, statusTone } from "@/lib/status";
 import { formatMoney, formatDate, formatDateTime } from "@/lib/format";
 import { getOrder, getService, getPackage, getPlace, DEMO_PAYMENT_METHOD, orderCreatedISO, orderUploadedISO } from "@/lib/demo/catalog";
-import { Timeline, EvidenceGallery, PaymentMethodCard, type TimelineStep } from "@/components/order/OrderParts";
+import { Timeline, EvidenceGallery, PaymentMethodCard, ReceiptSVG, type TimelineStep } from "@/components/order/OrderParts";
+import { WhatsAppAction } from "@/components/order/WhatsAppAction";
 import { NotFoundState } from "@/components/ui";
 import { useProviderT } from "@/components/layout/ProviderShell";
 import { usePortalTitle } from "@/components/layout/PortalShell";
 import { fill, type ProviderDict } from "@/lib/i18n/provider";
-import { verifyDeadlineLabel, isOverdue, waLink, refundMessage } from "@/lib/demo/contact";
+import { verifyDeadlineLabel, isOverdue, refundMessage } from "@/lib/demo/contact";
 
 const ROLE = "provider_owner" as const;
 
@@ -76,6 +77,10 @@ export default function ProviderOrderDetail() {
   const uploadedISO = orderUploadedISO(base);
   const overdue = isOverdue(uploadedISO);
   const deadlineLabel = verifyDeadlineLabel(uploadedISO, lang);
+  const receiptProps = {
+    amount: money, reference: base.order_number, date: formatDateTime(uploadedISO, "en"),
+    bank: DEMO_PAYMENT_METHOD.bank_name, payee: DEMO_PAYMENT_METHOD.account_name, account: DEMO_PAYMENT_METHOD.account_number,
+  };
 
   function runPrimary(to: OrderStatus) {
     if (to === "evidence_submitted" && !canSubmitEvidence) return;
@@ -97,7 +102,7 @@ export default function ProviderOrderDetail() {
       <div className="banner-review" style={{ marginBottom: "var(--space-4)" }}>{od.uploadWarn}</div>
       <div className="receipt-row">
         <button className="receipt-thumb" onClick={() => setReceiptOpen(true)} aria-label={od.paymentReceipt}>
-          <img src="/demo/receipt-ord-a.svg" alt={od.paymentReceipt} />
+          <ReceiptSVG {...receiptProps} />
           <span className="receipt-thumb-zoom"><ZoomIn size={16} /></span>
         </button>
         <dl className="pay-method-grid" style={{ flex: 1 }}>
@@ -155,11 +160,13 @@ export default function ProviderOrderDetail() {
       <h2>{statusLabel(status, lang)}</h2>
       <p className="text-muted" style={{ fontSize: "var(--text-sm)", marginBottom: "var(--space-4)" }}>{od.refundInstruction}</p>
       {base.customer_phone ? (
-        <a className="btn btn-primary btn-full" href={waLink(base.customer_phone, refundMessage(base.order_number, money, lang))} target="_blank" rel="noreferrer" style={{ marginBottom: "var(--space-3)" }}>
-          {fill(od.waCustomer, { name: base.customer_name })}
-        </a>
+        <WhatsAppAction number={base.customer_phone} text={refundMessage(base.order_number, money, lang)}
+          label={fill(od.waCustomer, { name: base.customer_name })} lang={lang}
+          className="btn btn-primary btn-full" style={{ marginBottom: "var(--space-3)" }} />
       ) : null}
-      <PrimaryBtn />
+      {primary ? (
+        <button className="btn btn-secondary btn-full" onClick={() => runPrimary(primary.to)}>{A(primary)}</button>
+      ) : null}
       <p className="text-muted" style={{ fontSize: "var(--text-xs)", marginTop: "var(--space-3)" }}>{od.refundFooter}</p>
     </section>
   );
@@ -227,7 +234,7 @@ export default function ProviderOrderDetail() {
 
       {blocks}
 
-      {primary ? (
+      {primary && status !== "refund_requested" ? (
         <div className="order-actionbar">
           <button className="btn btn-primary btn-full" disabled={primaryDisabled} onClick={() => runPrimary(primary.to)}>{A(primary)}</button>
         </div>
@@ -244,7 +251,7 @@ export default function ProviderOrderDetail() {
               </div>
             </div>
             <div className="receipt-overlay-scroll">
-              <img src="/demo/receipt-ord-a.svg" alt={od.paymentReceipt} style={{ width: zoom ? "200%" : "100%", maxWidth: zoom ? "none" : "480px" }} />
+              <ReceiptSVG {...receiptProps} style={{ width: zoom ? "200%" : "100%", maxWidth: zoom ? "none" : "480px" }} />
             </div>
             <p className="receipt-overlay-note">{fill(od.checkBank, { amount: money, ref: base.order_number })}</p>
           </div>

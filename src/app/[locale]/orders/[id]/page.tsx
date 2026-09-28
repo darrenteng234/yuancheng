@@ -6,8 +6,9 @@ import type { Locale, OrderStatus } from "@/types/platform";
 import { getOrder, getService, getProvider, getPlace, getPackage, money, DEMO_PAYMENT_METHOD, orderCreatedISO, orderUploadedISO } from "@/lib/demo/catalog";
 import { OrderStatusBadge } from "@/components/ui";
 import { formatDate } from "@/lib/format";
-import { verifyDeadlineLabel, waLink, verifyChaseMessage, DEMO_PROVIDER_WHATSAPP, SUPPORT_WHATSAPP } from "@/lib/demo/contact";
+import { verifyDeadlineLabel, verifyChaseMessage, DEMO_PROVIDER_WHATSAPP, SUPPORT_WHATSAPP } from "@/lib/demo/contact";
 import { Timeline, EvidenceGallery, PaymentMethodCard, type TimelineStep } from "@/components/order/OrderParts";
+import { WhatsAppAction } from "@/components/order/WhatsAppAction";
 
 // Build the customer timeline from the order status (manual-payment aware).
 function buildTimeline(status: string, zh: boolean): TimelineStep[] {
@@ -80,12 +81,11 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
                     : `The provider will verify within 24 hours (by ${verifyDeadlineLabel(orderUploadedISO(order), zh ? "zh" : "en")}). Uploading a receipt does not mean payment is verified.`}
                 </div>
                 <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap", marginTop: "var(--space-3)" }}>
-                  <a className="btn btn-secondary btn-sm" href={waLink(DEMO_PROVIDER_WHATSAPP, verifyChaseMessage(order.order_number, zh ? "zh" : "en"))} target="_blank" rel="noreferrer">
-                    {zh ? "WhatsApp 联系服务商" : "WhatsApp the provider"}
-                  </a>
-                  <a className="nav-link-plain" style={{ fontSize: "var(--text-sm)" }} href={waLink(SUPPORT_WHATSAPP, zh ? `订单 ${order.order_number} 超过 24 小时仍未核实。` : `Order ${order.order_number} not verified after 24 hours.`)} target="_blank" rel="noreferrer">
-                    {zh ? "超过 24 小时仍未核实？联系愿成客服" : "Not verified after 24 hours? Contact Yuancheng support"}
-                  </a>
+                  <WhatsAppAction number={DEMO_PROVIDER_WHATSAPP} text={verifyChaseMessage(order.order_number, zh ? "zh" : "en")}
+                    label={zh ? "WhatsApp 联系服务商" : "WhatsApp the provider"} lang={zh ? "zh" : "en"} className="btn btn-secondary btn-sm" />
+                  <WhatsAppAction number={SUPPORT_WHATSAPP} text={zh ? `订单 ${order.order_number} 超过 24 小时仍未核实。` : `Order ${order.order_number} not verified after 24 hours.`}
+                    label={zh ? "超过 24 小时仍未核实？联系愿成客服" : "Not verified after 24 hours? Contact Yuancheng support"} lang={zh ? "zh" : "en"}
+                    className="nav-link-plain" style={{ fontSize: "var(--text-sm)" }} />
                 </div>
               </>
             ) : null}

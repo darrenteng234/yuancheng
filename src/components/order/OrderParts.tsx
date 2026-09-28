@@ -1,5 +1,49 @@
+import type { CSSProperties } from "react";
 import { Check, Camera, Landmark, Info } from "lucide-react";
 import { EVIDENCE_DISCLAIMER } from "@/lib/domain/evidence";
+
+/**
+ * Demo bank-transfer receipt, rendered inline so it always matches its order
+ * (amount + reference) and shows the order's own upload time (relative, KL) —
+ * not a fixed image. Styled like a Maybank app receipt (kept in English).
+ */
+export function ReceiptSVG({
+  amount, reference, date, bank, payee, account, style,
+}: {
+  amount: string; reference: string; date: string;
+  bank: string; payee: string; account: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1040" width="720" height="1040"
+      style={{ width: "100%", height: "auto", display: "block", ...style }} role="img"
+      aria-label={`${bank} transfer receipt, ${amount}, ${reference}`}
+      fontFamily="-apple-system,Segoe UI,Roboto,sans-serif">
+      <rect width="720" height="1040" fill="#F1EDE4" />
+      <rect x="60" y="70" width="600" height="900" rx="20" fill="#FFFFFF" stroke="#E1DED5" />
+      <rect x="60" y="70" width="600" height="110" rx="20" fill="#5A3A22" />
+      <text x="90" y="140" fill="#FFFFFF" fontSize="30" fontWeight="700">{bank}</text>
+      <text x="630" y="140" fill="#E8DCCD" fontSize="22" textAnchor="end">Transfer receipt</text>
+      <text x="90" y="250" fill="#5F6761" fontSize="22">Status</text>
+      <text x="630" y="250" fill="#2E6B55" fontSize="24" fontWeight="700" textAnchor="end">Successful</text>
+      <line x1="90" y1="290" x2="630" y2="290" stroke="#E1DED5" />
+      <text x="90" y="350" fill="#5F6761" fontSize="22">Amount</text>
+      <text x="630" y="356" fill="#1F2A24" fontSize="40" fontWeight="700" textAnchor="end">{amount}</text>
+      <line x1="90" y1="400" x2="630" y2="400" stroke="#E1DED5" />
+      <text x="90" y="460" fill="#5F6761" fontSize="22">Reference</text>
+      <text x="630" y="460" fill="#1F2A24" fontSize="26" fontWeight="600" textAnchor="end">{reference}</text>
+      <text x="90" y="540" fill="#5F6761" fontSize="22">To</text>
+      <text x="630" y="540" fill="#1F2A24" fontSize="24" textAnchor="end">{payee}</text>
+      <text x="90" y="620" fill="#5F6761" fontSize="22">Account</text>
+      <text x="630" y="620" fill="#1F2A24" fontSize="24" textAnchor="end">{account}</text>
+      <text x="90" y="700" fill="#5F6761" fontSize="22">Date</text>
+      <text x="630" y="700" fill="#1F2A24" fontSize="24" textAnchor="end">{date}</text>
+      <line x1="90" y1="760" x2="630" y2="760" stroke="#E1DED5" />
+      <text x="360" y="850" fill="#8A918B" fontSize="20" textAnchor="middle">Demo receipt — Investor Demo</text>
+      <text x="360" y="885" fill="#8A918B" fontSize="20" textAnchor="middle">Not a real transaction</text>
+    </svg>
+  );
+}
 
 /** Vertical order timeline. Steps marked done/current/upcoming. */
 export interface TimelineStep { label: string; state: "done" | "current" | "upcoming"; sub?: string; }

@@ -150,7 +150,7 @@ export const DEMO_ORDERS: DemoOrder[] = [
     providerSlug: "golden-lotus-services", status: "payment_proof_submitted", amount: 88, currency: "MYR",
     createdDaysAgo: 0, uploadedHoursAgo: 3, customer_name: "Demo Customer",
     customer_request: "Please make an offering for the health and safety of my family.",
-    customer_phone: "60128889999",
+    customer_phone: "60000000000",
     evidence: [],
   },
   {
@@ -158,7 +158,7 @@ export const DEMO_ORDERS: DemoOrder[] = [
     providerSlug: "golden-lotus-services", status: "payment_proof_submitted", amount: 120, currency: "MYR",
     createdDaysAgo: 2, uploadedHoursAgo: 26, customer_name: "Wei Ling",
     customer_request: "A blessing for my mother’s recovery.",
-    customer_phone: "60123334444",
+    customer_phone: "60000000000",
     evidence: [],
   },
   {
@@ -166,7 +166,7 @@ export const DEMO_ORDERS: DemoOrder[] = [
     providerSlug: "golden-lotus-services", status: "completed", amount: 188, currency: "MYR",
     createdDaysAgo: 13, completedDaysAgo: 12, customer_name: "Demo Customer",
     customer_request: "Offering with photo and video, in memory of my grandfather.",
-    customer_phone: "60128889999",
+    customer_phone: "60000000000",
     evidence: [
       { type: "photo", url: "/demo/evidence-placeholder.svg", label: { en: "Offering placed", zh: "供品已摆放" } },
       { type: "photo", url: "/demo/evidence-placeholder.svg", label: { en: "At the altar", zh: "于祭坛前" } },
