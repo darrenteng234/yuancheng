@@ -1,5 +1,5 @@
 import { Check, X } from "lucide-react";
-import { DEMO_SERVICES, DEMO_PRODUCTS } from "@/lib/demo/catalog";
+import { servicesByProvider, DEMO_PRODUCTS } from "@/lib/demo/catalog";
 import { PageHeader } from "@/components/ui";
 import { providerLang } from "@/lib/i18n/provider-lang";
 import { getProviderDict } from "@/lib/i18n/provider";
@@ -7,7 +7,7 @@ import { getProviderDict } from "@/lib/i18n/provider";
 export default async function ProviderSubscription() {
   const t = getProviderDict(await providerLang()).sub;
   const caps = [
-    { label: t.services, used: DEMO_SERVICES.length, limit: 3 as number | null },
+    { label: t.services, used: servicesByProvider("golden-lotus-services").length, limit: 3 as number | null },
     { label: t.products, used: DEMO_PRODUCTS.length, limit: null as number | null },
     { label: t.staff, used: 0, limit: 0 as number | null },
   ];

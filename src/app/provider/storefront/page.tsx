@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
-import { DEMO_PROVIDERS, DEMO_SERVICES, DEMO_PRODUCTS } from "@/lib/demo/catalog";
+import { DEMO_PROVIDERS, DEMO_PRODUCTS, servicesByProvider } from "@/lib/demo/catalog";
 import { PageHeader } from "@/components/ui";
 import { providerLang } from "@/lib/i18n/provider-lang";
 import { getProviderDict } from "@/lib/i18n/provider";
@@ -9,6 +9,7 @@ export default async function ProviderStorefront() {
   const lang = await providerLang();
   const t = getProviderDict(lang).store;
   const p = DEMO_PROVIDERS[0];
+  const services = servicesByProvider(p.slug);
   return (
     <div style={{ padding: "var(--space-6)", maxWidth: 900, margin: "0 auto" }}>
       <PageHeader title={t.title} subtitle={t.subtitle}
@@ -28,8 +29,8 @@ export default async function ProviderStorefront() {
         </div>
       </div>
       <div className="acct-section">
-        <h2>{t.services} ({DEMO_SERVICES.length})</h2>
-        {DEMO_SERVICES.map((s) => <div key={s.slug} className="capacity-row"><span>{s.name}</span><Link href="/provider/services" className="disc-card-cta">{t.manage}</Link></div>)}
+        <h2>{t.services} ({services.length})</h2>
+        {services.map((s) => <div key={s.slug} className="capacity-row"><span>{s.name}</span><Link href="/provider/services" className="disc-card-cta">{t.manage}</Link></div>)}
       </div>
       <div className="acct-section">
         <h2>{t.products} ({DEMO_PRODUCTS.length})</h2>

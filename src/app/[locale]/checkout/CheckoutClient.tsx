@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { CheckCircle2, Upload, Info, ArrowLeft } from "lucide-react";
-import { getService, getPackage, getProvider, getPlace, packagesByService, money, DEMO_PAYMENT_METHOD } from "@/lib/demo/catalog";
+import { getService, getPackage, getProvider, getPlace, packagesByService, money, DEMO_PAYMENT_METHOD, svcName, provName, placeName } from "@/lib/demo/catalog";
 import { PaymentMethodCard, PackageCard } from "@/components/order/OrderParts";
 
 const REQUEST_MAX = 2000;
@@ -66,7 +66,7 @@ export default function CheckoutClient() {
             <h2><span className="step-num">1</span> {zh ? "选择套餐" : "Choose package"}</h2>
             <div style={{ display: "grid", gap: "var(--space-3)" }}>
               {pkgs.map((p) => (
-                <PackageCard key={p.id} name={p.name} price={money(p.price, p.currency)} locale={locale}
+                <PackageCard key={p.id} name={zh ? p.nameZh : p.name} price={money(p.price, p.currency)} locale={locale}
                   includes={p.includes.map((i) => (zh ? i.zh : i.en))}
                   selected={p.id === pkgId} onSelect={() => setPkgId(p.id)} />
               ))}
@@ -136,10 +136,10 @@ export default function CheckoutClient() {
         {/* Summary */}
         <aside className="checkout-summary">
           <h3 style={{ fontWeight: 600, marginBottom: "var(--space-4)" }}>{zh ? "订单摘要" : "Order summary"}</h3>
-          <div className="summary-row"><span>{zh ? "服务" : "Service"}</span><span style={{ color: "var(--color-text)", fontWeight: 500 }}>{service.name}</span></div>
-          <div className="summary-row"><span>{zh ? "套餐" : "Package"}</span><span style={{ color: "var(--color-text)", fontWeight: 500 }}>{pkg.name}</span></div>
-          <div className="summary-row"><span>{zh ? "服务商" : "Provider"}</span><span>{provider?.name}</span></div>
-          {place ? <div className="summary-row"><span>{zh ? "场所" : "Place"}</span><span>{place.name}</span></div> : null}
+          <div className="summary-row"><span>{zh ? "服务" : "Service"}</span><span style={{ color: "var(--color-text)", fontWeight: 500 }}>{svcName(service, locale)}</span></div>
+          <div className="summary-row"><span>{zh ? "套餐" : "Package"}</span><span style={{ color: "var(--color-text)", fontWeight: 500 }}>{zh ? pkg.nameZh : pkg.name}</span></div>
+          <div className="summary-row"><span>{zh ? "服务商" : "Provider"}</span><span>{provider ? provName(provider, locale) : null}</span></div>
+          {place ? <div className="summary-row"><span>{zh ? "场所" : "Place"}</span><span>{placeName(place, locale)}</span></div> : null}
           <div className="summary-row"><span>{zh ? "代办" : "Fulfilment"}</span><span>{zh ? "服务商代办" : "Provider"}</span></div>
           <div className="summary-row"><span>{zh ? "完成记录" : "Evidence"}</span><span>{pkg.evidence === "photo_video" ? (zh ? "照片+视频" : "Photo+video") : pkg.evidence === "photo" ? (zh ? "照片" : "Photo") : (zh ? "无" : "None")}</span></div>
           <div className="summary-total"><span>{zh ? "总计" : "Total"}</span><span>{money(amount, pkg.currency)}</span></div>

@@ -13,6 +13,12 @@ export interface ServiceCardData {
   evidence?: "none" | "photo" | "photo_video";
   fulfilment?: string;   // e.g. "Provider fulfilled"
   image?: string;
+  demo?: boolean;
+}
+
+/** Small "示范 / Demo" tag for fictional demo content. */
+export function DemoTag({ zh }: { zh: boolean }) {
+  return <span className="tag tag--demo">{zh ? "示范" : "Demo"}</span>;
 }
 
 const EVIDENCE_LABEL: Record<string, Record<NonNullable<ServiceCardData["evidence"]>, string>> = {
@@ -38,6 +44,7 @@ export function ServiceCard({ locale, s }: { locale: string; s: ServiceCardData 
           <div className="disc-card-meta"><MapPin size={13} /> {s.place}</div>
         ) : null}
         <div className="disc-card-tags">
+          {s.demo ? <DemoTag zh={zh} /> : null}
           {s.verified ? <span className="tag tag--verified"><ShieldCheck size={13} /> {zh ? "已核实服务商" : "Verified provider"}</span> : null}
           {s.evidence && s.evidence !== "none" ? (
             <span className="tag">{s.evidence === "photo_video" ? <Video size={13} /> : <Camera size={13} />} {ev[s.evidence]}</span>
@@ -54,9 +61,10 @@ export function ServiceCard({ locale, s }: { locale: string; s: ServiceCardData 
 }
 
 export interface ProviderCardData {
-  slug: string; name: string; place?: string; verified?: boolean; serviceCount?: number;
+  slug: string; name: string; place?: string; verified?: boolean; serviceCount?: number; demo?: boolean;
 }
 export function ProviderCard({ locale, p }: { locale: string; p: ProviderCardData }) {
+  const zh = locale === "zh";
   return (
     <Link href={`/${locale}/providers/${p.slug}`} className="disc-card disc-card--row">
       <div className="card-thumb card-thumb--placeholder" aria-hidden><Store size={24} /></div>
@@ -64,8 +72,9 @@ export function ProviderCard({ locale, p }: { locale: string; p: ProviderCardDat
         <div className="disc-card-title">{p.name}</div>
         {p.place ? <div className="disc-card-meta"><MapPin size={13} /> {p.place}</div> : null}
         <div className="disc-card-tags">
-          {p.verified ? <span className="tag tag--verified"><ShieldCheck size={13} /> Verified provider</span> : null}
-          {typeof p.serviceCount === "number" ? <span className="tag">{p.serviceCount} services</span> : null}
+          {p.demo ? <DemoTag zh={zh} /> : null}
+          {p.verified ? <span className="tag tag--verified"><ShieldCheck size={13} /> {zh ? "已核实服务商" : "Verified provider"}</span> : null}
+          {typeof p.serviceCount === "number" ? <span className="tag">{p.serviceCount} {zh ? "项服务" : "services"}</span> : null}
         </div>
       </div>
     </Link>
@@ -73,7 +82,7 @@ export function ProviderCard({ locale, p }: { locale: string; p: ProviderCardDat
 }
 
 export interface PlaceCardData {
-  slug: string; name: string; location?: string; providerCount?: number; serviceCount?: number;
+  slug: string; name: string; location?: string; providerCount?: number; serviceCount?: number; demo?: boolean;
 }
 export function PlaceCard({ locale, pl }: { locale: string; pl: PlaceCardData }) {
   const zh = locale === "zh";
@@ -83,6 +92,7 @@ export function PlaceCard({ locale, pl }: { locale: string; pl: PlaceCardData })
       <div className="disc-card-body">
         <div className="disc-card-title">{pl.name}</div>
         {pl.location ? <div className="disc-card-meta"><MapPin size={13} /> {pl.location}</div> : null}
+        {pl.demo ? <div className="disc-card-tags"><DemoTag zh={zh} /></div> : null}
         <div className="disc-card-stats">
           <span><strong>{pl.providerCount ?? 0}</strong> {zh ? "个服务商" : "providers"}</span>
           <span><strong>{pl.serviceCount ?? 0}</strong> {zh ? "项服务" : "services"}</span>

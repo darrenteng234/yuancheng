@@ -55,7 +55,7 @@ export const en = {
       { q: 'How do I know my order was fulfilled?', a: 'Every order includes photo/video evidence, reviewed before it is marked complete.' },
       { q: 'How do I track my order?', a: 'Use the secure tracking link shown after checkout — no account required.' },
       { q: 'Can I get a refund?', a: 'Yes, subject to our refund policy. Contact us with your order number.' },
-      { q: 'Do you guarantee outcomes?', a: 'We facilitate temple-related services. We do not guarantee religious or spiritual outcomes.' },
+      { q: 'Are results promised?', a: 'We facilitate temple-related services. We do not guarantee religious or spiritual outcomes.' },
     ],
   },
   about: {

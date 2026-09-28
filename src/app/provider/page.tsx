@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ShieldCheck, Plus, ClipboardList, Store, Receipt } from "lucide-react";
-import { DEMO_ORDERS, DEMO_SERVICES, DEMO_PRODUCTS, getService, money, orderUploadedISO } from "@/lib/demo/catalog";
+import { DEMO_ORDERS, DEMO_PRODUCTS, getService, money, orderUploadedISO, servicesByProvider } from "@/lib/demo/catalog";
 import { providerLang } from "@/lib/i18n/provider-lang";
 import { getProviderDict, fill } from "@/lib/i18n/provider";
 import { isOverdue, verifyDeadlineLabel } from "@/lib/demo/contact";
@@ -96,7 +96,7 @@ export default async function ProviderDashboard() {
       <section>
         <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: "var(--space-4)" }}>{t.catalog}</h2>
         <div className="metric-card">
-          <div className="capacity-row"><span>{t.activeServices}</span><span style={{ fontWeight: 600 }}>{DEMO_SERVICES.length} / 3</span></div>
+          <div className="capacity-row"><span>{t.activeServices}</span><span style={{ fontWeight: 600 }}>{servicesByProvider("golden-lotus-services").length} / 3</span></div>
           <div className="capacity-row"><span>{t.products}</span><span style={{ fontWeight: 600 }}>{DEMO_PRODUCTS.length}</span></div>
           <div className="capacity-row"><span>{t.plan}</span><span style={{ fontWeight: 600 }}>{t.freeBeta}</span></div>
         </div>
