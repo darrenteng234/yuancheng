@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { Logo } from "@/components/brand/Logo";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -69,7 +70,7 @@ export default function AdminLoginPage() {
         }}
       >
         <div style={{ textAlign: "center", marginBottom: "var(--space-6)" }}>
-          <div style={{ fontSize: "2rem", marginBottom: "var(--space-2)" }}>⛩️</div>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "var(--space-2)" }}><Logo wordmark={false} size={40} /></div>
           <h1 style={{ fontSize: "var(--text-xl)", fontWeight: 700, marginBottom: "var(--space-1)" }}>
             Admin Login
           </h1>

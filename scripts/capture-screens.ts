@@ -9,19 +9,22 @@ import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const MODE = process.argv[2] || 'before'; // before | after | after-5c
+const MODE = process.argv[2] || 'before'; // before | after | after-5c | after-5f
 const IS_5C = MODE.startsWith('after-5');
+const IS_5F = MODE === 'after-5f'; // customer home; locale in the path, not a cookie
 const BASE = process.env.CAPTURE_BASE || 'http://localhost:3000';
 const OUT = path.join('docs/design-audit/screens', MODE);
 const WIDTHS = IS_5C ? [375, 1440] : [375, 768, 1440];
 const LANGS = IS_5C ? ['en', 'zh'] : [''];
-const ROUTES: [string, string][] = [
-  ['provider', '/provider'],
-  ['orders', '/provider/orders'],
-  ['orders-ord-a', '/provider/orders/ord-a'],
-  ['orders-ord-b', '/provider/orders/ord-b'],
-  ['account', '/provider/account'],
-];
+const ROUTES: [string, string][] = IS_5F
+  ? [['home', '']]
+  : [
+      ['provider', '/provider'],
+      ['orders', '/provider/orders'],
+      ['orders-ord-a', '/provider/orders/ord-a'],
+      ['orders-ord-b', '/provider/orders/ord-b'],
+      ['account', '/provider/account'],
+    ];
 
 async function main() {
   const browser = await chromium.launch();
@@ -34,7 +37,8 @@ async function main() {
       if (lang) await ctx.addCookies([{ name: 'yc_provider_lang', value: lang, url: BASE }]);
       const page = await ctx.newPage();
       for (const [slug, route] of ROUTES) {
-        await page.goto(`${BASE}${route}`, { waitUntil: 'networkidle' });
+        const url = IS_5F ? `${BASE}/${lang}${route}` : `${BASE}${route}`;
+        await page.goto(url, { waitUntil: 'networkidle' });
         await page.waitForTimeout(300);
         await page.screenshot({ path: path.join(dir, `${slug}__${w}.png`), fullPage: true });
         if (w === 375) {

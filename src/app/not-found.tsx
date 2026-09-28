@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 
 export default function NotFound() {
   return (
@@ -7,7 +8,7 @@ export default function NotFound() {
       justifyContent: "center", textAlign: "center", padding: "var(--space-8)", gap: "var(--space-3)",
       background: "var(--color-bg)", color: "var(--color-text)",
     }}>
-      <div style={{ fontSize: "var(--text-5xl)" }} aria-hidden>⛩️</div>
+      <div style={{ marginBottom: "var(--space-2)" }}><Logo wordmark={false} size={52} /></div>
       <h1 style={{ fontSize: "var(--text-3xl)", fontWeight: 700 }}>Page not found</h1>
       <p style={{ color: "var(--color-text-secondary)", maxWidth: "44ch" }}>
         The page you’re looking for doesn’t exist or has moved.

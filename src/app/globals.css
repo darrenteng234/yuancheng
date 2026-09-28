@@ -57,6 +57,8 @@
   --amber-600: var(--brass); --amber-700: #9C8149; --amber-800: #7E6836;
   --stone-50: var(--ivory); --stone-100: var(--ivory-2); --stone-300: var(--line);
   --stone-400: var(--muted-2); --stone-600: var(--muted); --stone-700: var(--ink-2); --stone-900: var(--ink);
+  /* Dark footer: light text tuned for >= 4.5:1 on --footer-bg. */
+  --footer-bg: #2B211B; --footer-text: #D8CFC5; --footer-muted: #B3A89B;
   --earth-50: var(--evergreen-bg); --earth-100: var(--evergreen-tint); --earth-200: #C4D6CC; --earth-700: var(--evergreen-dark);
   --sage-100: var(--success-bg); --sage-700: #24503F;
   --terracotta-100: var(--warning-bg); --terracotta-600: var(--warning);
@@ -178,8 +180,18 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .header-nav { display: flex; align-items: center; gap: var(--space-6); flex: 1; justify-content: center; }
 .header-nav a { font-size: var(--text-sm); font-weight: 500; color: var(--color-text-secondary); white-space: nowrap; }
 .header-nav a:hover { color: var(--color-text); }
-.header-actions { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
-.site-footer { background: var(--stone-900); color: var(--stone-300); padding: var(--space-12) 0 var(--space-6); font-size: var(--text-sm); margin-top: auto; }
+.header-actions { display: flex; align-items: center; gap: var(--space-3); flex-shrink: 0; }
+/* Hamburger is hidden by default (desktop); the mobile media query shows it. */
+.hamburger { display: none; }
+/* Drawer-only items live in the nav but appear only inside the mobile drawer. */
+.drawer-only { display: none; }
+.header-desktop-only { display: inline-flex; }
+.site-footer { background: var(--footer-bg); color: var(--footer-text); padding: var(--space-12) 0 var(--space-6); font-size: var(--text-sm); margin-top: auto; }
+.site-footer a { color: var(--footer-text); }
+.site-footer a:hover { color: #FFFFFF; }
+.footer-col-head { color: #FFFFFF; font-weight: 600; margin-bottom: var(--space-3); font-size: var(--text-sm); }
+.footer-link { display: block; color: var(--footer-text); font-size: var(--text-sm); padding: 3px 0; }
+.footer-bottom { border-top: 1px solid rgba(244,238,230,0.14); padding-top: var(--space-4); text-align: center; color: var(--footer-muted); font-size: var(--text-xs); }
 .page-header { padding: var(--space-10) 0 var(--space-6); }
 .page-header h1 { font-size: var(--text-3xl); font-weight: 700; margin-bottom: var(--space-2); }
 .page-header p { color: var(--color-text-secondary); }
@@ -326,12 +338,16 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
     padding: 0 var(--space-4);
   }
   .header-actions {
-    gap: var(--space-1);
+    gap: var(--space-2);
   }
   .header-actions .btn {
     padding: var(--space-2) var(--space-3);
     font-size: var(--text-xs);
   }
+  /* Desktop-only actions collapse into the drawer; drawer items appear there.
+     Scoped to .header-actions so it beats the later .nav-link-plain rule. */
+  .header-actions .header-desktop-only { display: none; }
+  .drawer-only { display: block; }
 
   /* 2. Grids → single column */
   .grid-2, .grid-3, .grid-4 {
@@ -806,6 +822,7 @@ h1, h2, h3, .page-header h1, .dialog-card h3, .auth-card h1 {
 .yc-logo { display: inline-flex; align-items: center; gap: 8px; }
 .yc-seal { border-radius: 6px; background: var(--cinnabar); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-serif, var(--font-body)); font-weight: 600; line-height: 1; flex: none; }
 .yc-word { font-family: var(--font-serif, var(--font-body)); font-weight: 600; color: var(--color-text); font-size: var(--text-lg); letter-spacing: 0.01em; }
+.yc-logo--light .yc-word { color: #F4EEE6; }
 
 /* Dashboard needs-attention rows */
 .na-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border: 1px solid var(--color-border); border-left: 3px solid var(--saffron); border-radius: var(--radius-md); background: var(--color-surface); }

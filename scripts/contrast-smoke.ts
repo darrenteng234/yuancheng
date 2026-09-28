@@ -9,6 +9,7 @@ const C = {
   sandalwood: "#5A3A22", primaryBg: "#F3EBE3",
   success: "#2E6B55", successBg: "#E7F0EB", warning: "#8A5A1F", warningBg: "#F7EEDD",
   error: "#9A3B3B", errorBg: "#F7E9E7", info: "#43627A", infoBg: "#E8EFF3",
+  footerBg: "#2B211B", footerText: "#D8CFC5", footerMuted: "#B3A89B",
 };
 const PAIRS: [string, string, string][] = [
   ["body ink/ivory", C.ink, C.ivory], ["body ink/white", C.ink, C.white], ["body ink/ivory-2", C.ink, C.ivory2],
@@ -20,6 +21,8 @@ const PAIRS: [string, string, string][] = [
   ["badge muted/surface-2", C.muted, C.ivory2],
   ["banner-review warning/warning-bg", C.warning, C.warningBg],
   ["btn-danger white/error", C.white, C.error],
+  ["footer text/footer-bg", C.footerText, C.footerBg],
+  ["footer muted/footer-bg", C.footerMuted, C.footerBg],
 ];
 let pass = 0, fail = 0;
 console.log("CONTRAST (>= 4.5:1)");

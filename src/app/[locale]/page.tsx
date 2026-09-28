@@ -66,10 +66,16 @@ const COPY = {
 
 // Sample demo content (fictional — Investor Demo). Real listings render once seeded.
 const SAMPLE_SERVICES: ServiceCardData[] = [
-  { slug: "temple-offering-service", name: "Temple Offering Service", provider: "Golden Lotus Services", place: "Golden Lotus Temple · Kuala Lumpur", price: "RM 88", verified: true, evidence: "photo_video", fulfilment: "Provider fulfilled" },
-  { slug: "blessing-service", name: "Blessing Service", provider: "Golden Lotus Services", place: "Golden Lotus Temple · Kuala Lumpur", price: "RM 120", verified: true, evidence: "photo", fulfilment: "Provider fulfilled" },
-  { slug: "ancestral-remembrance", name: "Ancestral Remembrance", provider: "Golden Lotus Services", place: "Golden Lotus Temple · Kuala Lumpur", price: "RM 168", verified: true, evidence: "photo_video", fulfilment: "Provider fulfilled" },
+  { slug: "temple-offering-service", name: "Temple Offering Service", provider: "Golden Lotus Services", place: "Golden Lotus Temple · Kuala Lumpur", price: "RM 88.00", verified: true, evidence: "photo_video", fulfilment: "Provider fulfilled" },
+  { slug: "blessing-service", name: "Blessing Service", provider: "Golden Lotus Services", place: "Golden Lotus Temple · Kuala Lumpur", price: "RM 120.00", verified: true, evidence: "photo", fulfilment: "Provider fulfilled" },
+  { slug: "ancestral-remembrance", name: "Ancestral Remembrance", provider: "Golden Lotus Services", place: "Golden Lotus Temple · Kuala Lumpur", price: "RM 168.00", verified: true, evidence: "photo_video", fulfilment: "Provider fulfilled" },
 ];
+// Chinese overrides for the /zh sample cards (fictional demo content).
+const SERVICE_ZH: Record<string, { name: string; place: string }> = {
+  "temple-offering-service": { name: "寺庙供奉服务", place: "金莲寺 · 吉隆坡" },
+  "blessing-service": { name: "祈福服务", place: "金莲寺 · 吉隆坡" },
+  "ancestral-remembrance": { name: "先人追思服务", place: "金莲寺 · 吉隆坡" },
+};
 const SAMPLE_PLACES: PlaceCardData[] = [
   { slug: "golden-lotus-temple", name: "Golden Lotus Temple", location: "Kuala Lumpur, Malaysia", providerCount: 1, serviceCount: 3 },
 ];
@@ -79,7 +85,8 @@ const STEP_ICONS = [Search, ClipboardList, Sparkles, Camera];
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const l: Locale = isLocale(locale) ? (locale as Locale) : "en";
-  const t = COPY[l === "zh" ? "zh" : "en"];
+  const zh = l === "zh";
+  const t = COPY[zh ? "zh" : "en"];
 
   return (
     <>
@@ -98,17 +105,17 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <article className="feature-card">
               <div className="feature-card-img"><Store size={40} /></div>
               <div className="feature-card-body">
-                <h3>Temple Offering Service</h3>
+                <h3>{zh ? "寺庙供奉服务" : "Temple Offering Service"}</h3>
                 <div className="fc-provider">Golden Lotus Services</div>
                 <div className="fc-place"><MapPin size={13} /> Golden Lotus Temple · Kuala Lumpur</div>
                 <div className="feature-card-tags">
-                  <span className="tag tag--verified"><ShieldCheck size={13} /> Verified provider</span>
-                  <span className="tag"><Video size={13} /> Photo + video</span>
-                  <span className="tag">Provider fulfilled</span>
+                  <span className="tag tag--verified"><ShieldCheck size={13} /> {zh ? "已核实服务商" : "Verified provider"}</span>
+                  <span className="tag"><Video size={13} /> {zh ? "照片 + 视频" : "Photo + video"}</span>
+                  <span className="tag">{zh ? "服务商代办" : "Provider fulfilled"}</span>
                 </div>
                 <div className="feature-card-foot">
-                  <span className="feature-card-price">RM 88</span>
-                  <Link href={`/${l}/services/temple-offering-service`} className="btn btn-primary btn-sm">View service</Link>
+                  <span className="feature-card-price">RM 88.00</span>
+                  <Link href={`/${l}/services/temple-offering-service`} className="btn btn-primary btn-sm">{zh ? "查看服务" : "View service"}</Link>
                 </div>
               </div>
             </article>
@@ -140,7 +147,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <Link href={`/${l}/discover`} className="disc-card-cta" style={{ whiteSpace: "nowrap" }}>{t.viewAll} <ArrowRight size={15} /></Link>
           </div>
           <div className="disc-grid">
-            {SAMPLE_SERVICES.map((s) => <ServiceCard key={s.slug} locale={l} s={s} />)}
+            {SAMPLE_SERVICES.map((s) => <ServiceCard key={s.slug} locale={l}
+              s={zh ? { ...s, name: SERVICE_ZH[s.slug].name, place: SERVICE_ZH[s.slug].place, fulfilment: "服务商代办" } : s} />)}
           </div>
         </div>
       </section>
@@ -150,7 +158,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <div className="container">
           <div className="section-head"><h2>{t.explorePlacesHead}</h2><p>{t.explorePlacesSub}</p></div>
           <div className="disc-grid">
-            {SAMPLE_PLACES.map((pl) => <PlaceCard key={pl.slug} locale={l} pl={pl} />)}
+            {SAMPLE_PLACES.map((pl) => <PlaceCard key={pl.slug} locale={l}
+              pl={zh ? { ...pl, name: "金莲寺", location: "马来西亚，吉隆坡" } : pl} />)}
           </div>
         </div>
       </section>

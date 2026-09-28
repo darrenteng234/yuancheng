@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
-import { LOCALES, LOCALE_LABELS, DEFAULT_LOCALE } from "@/lib/i18n";
+import { LOCALES, DEFAULT_LOCALE } from "@/lib/i18n";
 import type { Locale } from "@/types/platform";
 
 const LABELS: Record<string, Record<string, string>> = {
@@ -19,32 +19,34 @@ export function SiteHeader({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
     { href: `/${locale}/discover`, label: L.discover },
     { href: `/${locale}/discover?tab=providers`, label: L.providers },
     { href: `/${locale}/discover?tab=places`, label: L.places },
-    { href: `/${locale}/how-it-works`, label: L.how, secondary: true },
+    { href: `/${locale}/how-it-works`, label: L.how },
   ];
   const other = LOCALES.filter((x) => x !== locale)[0] as Locale | undefined;
+  const otherLabel = other === "zh" ? "中文" : "EN";
+  const close = () => setOpen(false);
   return (
     <header className="site-header">
       <div className="header-inner container">
-        <Link href={`/${locale}`} className="header-logo"><Logo /></Link>
-        <button className="hamburger" onClick={() => setOpen(!open)} aria-label="Menu" aria-expanded={open}>
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <Link href={`/${locale}`} className="header-logo" onClick={close}><Logo /></Link>
+
+        {/* Centre nav (desktop) / drawer body (mobile). Drawer-only extras follow
+            the primary links in the order: nav · my orders · language · providers. */}
         <nav className={`header-nav${open ? " open" : ""}`}>
           {nav.map((n) => (
-            <Link key={n.href} href={n.href} onClick={() => setOpen(false)} className={n.secondary ? "nav-secondary" : undefined}>
-              {n.label}
-            </Link>
+            <Link key={n.href} href={n.href} onClick={close}>{n.label}</Link>
           ))}
+          <Link href={`/${locale}/orders`} onClick={close} className="drawer-only">{L.orders}</Link>
+          {other ? <Link href={`/${other}`} onClick={close} className="drawer-only">{otherLabel}</Link> : null}
+          <Link href="/provider" onClick={close} className="drawer-only nav-secondary">{L.forProviders}</Link>
         </nav>
+
         <div className="header-actions">
-          <Link href={`/${locale}/orders`} className="nav-link-plain">{L.orders}</Link>
-          <Link href="/login" className="btn btn-primary btn-sm">{L.signin}</Link>
-          {other ? (
-            <Link href={`/${other}`} className="btn btn-ghost btn-sm" aria-label={LOCALE_LABELS[other]} style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-              <Globe size={15} /> {other.toUpperCase()}
-            </Link>
-          ) : null}
-          <Link href="/provider" className="nav-link-plain nav-secondary">{L.forProviders}</Link>
+          <Link href={`/${locale}/orders`} className="nav-link-plain header-desktop-only">{L.orders}</Link>
+          {other ? <Link href={`/${other}`} className="nav-link-plain header-desktop-only">{otherLabel}</Link> : null}
+          <Link href={`/${locale}/login`} className="btn btn-secondary btn-sm">{L.signin}</Link>
+          <button className="hamburger" onClick={() => setOpen(!open)} aria-label="Menu" aria-expanded={open}>
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
       </div>
     </header>

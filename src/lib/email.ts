@@ -27,7 +27,7 @@ const FROM = process.env.EMAIL_FROM || "YUANCHENG <noreply@yuancheng.dev>";
 
 // ── HTML Template ──
 function wrapHTML(title: string, bodyHTML: string, lang: "cn" | "en") {
-  const tagline = lang === "cn" ? "传承信仰" : "Devotion Delivered";
+  const tagline = lang === "cn" ? "代您完成心意，每笔订单附完成记录。" : "Temple services, carried out for you — with a completion record.";
   const footer = lang === "cn"
     ? "我们协助您完成寺庙相关事务，但不保证任何宗教或灵性结果。"
     : "We facilitate temple-related services. We do not guarantee religious or spiritual outcomes.";
@@ -35,7 +35,7 @@ function wrapHTML(title: string, bodyHTML: string, lang: "cn" | "en") {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
 <tr><td style="padding:32px 24px;text-align:center;">
 <div style="font-size:24px;font-weight:700;letter-spacing:4px;color:#b45309;margin-bottom:8px;">YUANCHENG</div>
-<div style="font-size:11px;letter-spacing:2px;color:#92702a;text-transform:uppercase;">${tagline}</div>
+<div style="font-size:12px;color:#92702a;">${tagline}</div>
 <hr style="border:none;border-top:1px solid #e8dcc8;margin:24px 0;" />
 <h1 style="font-size:20px;font-weight:600;color:#3b2f1b;margin:0 0 16px;">${title}</h1>
 <div style="font-size:15px;line-height:1.7;color:#3b2f1b;text-align:left;">${bodyHTML}</div>

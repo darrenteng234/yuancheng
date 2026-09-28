@@ -6,7 +6,7 @@
 export const en = {
   common: {
     appName: 'Yuancheng',
-    tagline: 'Devotion, delivered.',
+    tagline: 'Temple services, carried out for you — with a completion record.',
     loading: 'Loading…',
     error: 'Something went wrong',
     retry: 'Try again',

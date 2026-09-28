@@ -4,7 +4,7 @@ import type { Dictionary } from './en';
 export const zh: Dictionary = {
   common: {
     appName: '愿成',
-    tagline: '传承信仰',
+    tagline: '代您完成心意，每笔订单附完成记录。',
     loading: '加载中…',
     error: '出错了',
     retry: '重试',

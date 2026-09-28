@@ -15,10 +15,9 @@ export interface ServiceCardData {
   image?: string;
 }
 
-const EVIDENCE_LABEL: Record<NonNullable<ServiceCardData["evidence"]>, string> = {
-  none: "No evidence",
-  photo: "Photo",
-  photo_video: "Photo + video",
+const EVIDENCE_LABEL: Record<string, Record<NonNullable<ServiceCardData["evidence"]>, string>> = {
+  en: { none: "No evidence", photo: "Photo", photo_video: "Photo + video" },
+  zh: { none: "无", photo: "照片", photo_video: "照片 + 视频" },
 };
 
 function Thumb({ image, label }: { image?: string; label: string }) {
@@ -27,6 +26,8 @@ function Thumb({ image, label }: { image?: string; label: string }) {
 }
 
 export function ServiceCard({ locale, s }: { locale: string; s: ServiceCardData }) {
+  const zh = locale === "zh";
+  const ev = EVIDENCE_LABEL[zh ? "zh" : "en"];
   return (
     <Link href={`/${locale}/services/${s.slug}`} className="disc-card">
       <Thumb image={s.image} label={s.name} />
@@ -37,15 +38,15 @@ export function ServiceCard({ locale, s }: { locale: string; s: ServiceCardData 
           <div className="disc-card-meta"><MapPin size={13} /> {s.place}</div>
         ) : null}
         <div className="disc-card-tags">
-          {s.verified ? <span className="tag tag--verified"><ShieldCheck size={13} /> Verified provider</span> : null}
+          {s.verified ? <span className="tag tag--verified"><ShieldCheck size={13} /> {zh ? "已核实服务商" : "Verified provider"}</span> : null}
           {s.evidence && s.evidence !== "none" ? (
-            <span className="tag">{s.evidence === "photo_video" ? <Video size={13} /> : <Camera size={13} />} {EVIDENCE_LABEL[s.evidence]}</span>
+            <span className="tag">{s.evidence === "photo_video" ? <Video size={13} /> : <Camera size={13} />} {ev[s.evidence]}</span>
           ) : null}
           {s.fulfilment ? <span className="tag">{s.fulfilment}</span> : null}
         </div>
         <div className="disc-card-foot">
           <span className="disc-card-price">{s.price}</span>
-          <span className="disc-card-cta">View service <ArrowRight size={15} /></span>
+          <span className="disc-card-cta">{zh ? "查看服务" : "View service"} <ArrowRight size={15} /></span>
         </div>
       </div>
     </Link>
@@ -75,6 +76,7 @@ export interface PlaceCardData {
   slug: string; name: string; location?: string; providerCount?: number; serviceCount?: number;
 }
 export function PlaceCard({ locale, pl }: { locale: string; pl: PlaceCardData }) {
+  const zh = locale === "zh";
   return (
     <Link href={`/${locale}/places/${pl.slug}`} className="disc-card">
       <div className="card-thumb card-thumb--placeholder" aria-hidden><MapPin size={28} /></div>
@@ -82,8 +84,8 @@ export function PlaceCard({ locale, pl }: { locale: string; pl: PlaceCardData })
         <div className="disc-card-title">{pl.name}</div>
         {pl.location ? <div className="disc-card-meta"><MapPin size={13} /> {pl.location}</div> : null}
         <div className="disc-card-stats">
-          <span><strong>{pl.providerCount ?? 0}</strong> providers</span>
-          <span><strong>{pl.serviceCount ?? 0}</strong> services</span>
+          <span><strong>{pl.providerCount ?? 0}</strong> {zh ? "个服务商" : "providers"}</span>
+          <span><strong>{pl.serviceCount ?? 0}</strong> {zh ? "项服务" : "services"}</span>
         </div>
       </div>
     </Link>
