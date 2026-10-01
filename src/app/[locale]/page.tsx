@@ -63,22 +63,29 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const l: Locale = isLocale(locale) ? (locale as Locale) : "en";
   const zh = l === "zh";
   const t = COPY[zh ? "zh" : "en"];
-  const featured = DEMO_SERVICES.slice(0, 3).map((s) => toServiceCard(s, l));
+  // One service each from three different providers + occasions.
+  const FEATURED_SLUGS = ["grave-tending", "lamp-dedication", "monk-alms"];
+  const featured = FEATURED_SLUGS
+    .map((slug) => DEMO_SERVICES.find((s) => s.slug === slug))
+    .filter((s): s is DemoService => Boolean(s))
+    .map((s) => toServiceCard(s, l));
 
   return (
     <>
       {/* 1 — Hero + occasion chips */}
       <section className="hero">
-        <div className="container" style={{ maxWidth: 820 }}>
-          <h1>{t.heroTitle}</h1>
-          <p className="hero-sub">{t.heroSub}</p>
-          <div className="hero-ctas" style={{ marginBottom: "var(--space-6)" }}>
-            <Link href={`/${l}/discover`} className="btn btn-primary btn-lg">{t.browse}</Link>
-          </div>
-          <div className="chip-row">
-            {OCCASION_CHIPS.map((c) => (
-              <Link key={c.key} href={`/${l}/discover?occasion=${c.key}`} className="chip">{zh ? c.zh : c.en}</Link>
-            ))}
+        <div className="container">
+          <div style={{ maxWidth: 820 }}>
+            <h1>{t.heroTitle}</h1>
+            <p className="hero-sub">{t.heroSub}</p>
+            <div className="hero-ctas" style={{ marginBottom: "var(--space-6)" }}>
+              <Link href={`/${l}/discover`} className="btn btn-primary btn-lg">{t.browse}</Link>
+            </div>
+            <div className="chip-row">
+              {OCCASION_CHIPS.map((c) => (
+                <Link key={c.key} href={`/${l}/discover?occasion=${c.key}`} className="chip">{zh ? c.zh : c.en}</Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>

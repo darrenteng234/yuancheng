@@ -1,12 +1,17 @@
 import Link from "next/link";
 import { ArrowRight, Receipt } from "lucide-react";
 import type { OrderStatus } from "@/types/platform";
-import { DEMO_ORDERS, getService, money, orderCreatedISO, orderUploadedISO } from "@/lib/demo/catalog";
+import { DEMO_ORDERS, getService, money, orderCreatedISO, orderUploadedISO, svcName } from "@/lib/demo/catalog";
 import { PageHeader, OrderStatusBadge } from "@/components/ui";
 import { formatDate } from "@/lib/format";
 import { providerLang } from "@/lib/i18n/provider-lang";
 import { getProviderDict, fill } from "@/lib/i18n/provider";
 import { isOverdue, verifyDeadlineLabel } from "@/lib/demo/contact";
+
+export async function generateMetadata() {
+  const lang = await providerLang();
+  return { title: { absolute: lang === "zh" ? "订单 · 愿成服务商" : "Orders · Yuancheng Provider" } };
+}
 
 export default async function ProviderOrders({ searchParams }: { searchParams: Promise<{ f?: string }> }) {
   const { f = "all" } = await searchParams;
@@ -49,7 +54,7 @@ export default async function ProviderOrders({ searchParams }: { searchParams: P
                   <Receipt size={18} style={{ color: "var(--color-primary)", flex: "none" }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 600 }}>{dash.checkReceipt}</div>
-                    <div className="text-muted" style={{ fontSize: "var(--text-sm)" }}>{o.order_number} · {service?.name} · {o.customer_name}</div>
+                    <div className="text-muted" style={{ fontSize: "var(--text-sm)" }}>{o.order_number} · {service ? svcName(service, lang) : ""} · {o.customer_name}</div>
                     <div style={{ fontSize: "var(--text-sm)", marginTop: 2 }}>
                       {money(o.amount, o.currency)} · {overdue
                         ? <span className="sbadge sbadge--warning">{od.overdue}</span>
@@ -79,7 +84,7 @@ export default async function ProviderOrders({ searchParams }: { searchParams: P
             <Link key={o.id} href={`/provider/orders/${o.id}`} className="order-row">
               <div className="order-row-main" style={{ minWidth: 0 }}>
                 <span className="order-row-num">{o.order_number} · {formatDate(orderCreatedISO(o), lang)}</span>
-                <span className="order-row-title">{service?.name}</span>
+                <span className="order-row-title">{service ? svcName(service, lang) : ""}</span>
                 <span className="order-row-meta">{o.customer_name} · {money(o.amount, o.currency)}</span>
                 {o.status === "payment_proof_submitted" ? (
                   overdueOf(o)

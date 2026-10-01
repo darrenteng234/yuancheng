@@ -7,7 +7,7 @@ import type { OrderStatus } from "@/types/platform";
 import { orderActions, type OrderAction } from "@/lib/domain/order";
 import { statusLabel, statusTone } from "@/lib/status";
 import { formatMoney, formatDate, formatDateTime } from "@/lib/format";
-import { getOrder, getService, getPackage, getPlace, DEMO_PAYMENT_METHOD, orderCreatedISO, orderUploadedISO } from "@/lib/demo/catalog";
+import { getOrder, getService, getPackage, getPlace, DEMO_PAYMENT_METHOD, orderCreatedISO, orderUploadedISO, svcName } from "@/lib/demo/catalog";
 import { Timeline, EvidenceGallery, PaymentMethodCard, ReceiptSVG, type TimelineStep } from "@/components/order/OrderParts";
 import { WhatsAppAction } from "@/components/order/WhatsAppAction";
 import { NotFoundState } from "@/components/ui";
@@ -174,7 +174,7 @@ export default function ProviderOrderDetail() {
   const packageBlock = (
     <section className="checkout-step" key="package"><h2>{od.package}</h2>
       <dl className="pay-method-grid">
-        <div><dt>{od.package}</dt><dd>{pkg?.name}</dd></div>
+        <div><dt>{od.package}</dt><dd>{pkg ? (lang === "zh" ? pkg.nameZh : pkg.name) : ""}</dd></div>
         <div><dt>{od.amount}</dt><dd>{money}</dd></div>
         {place ? <div><dt>{od.place}</dt><dd>{place.name}</dd></div> : null}
         <div><dt>{od.fulfilment}</dt><dd>{od.provider}</dd></div>
@@ -226,7 +226,7 @@ export default function ProviderOrderDetail() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "var(--space-3)", marginBottom: "var(--space-5)" }}>
         <div>
           <div className="order-row-num">{base.order_number}</div>
-          <h1 style={{ fontSize: "var(--text-2xl)", fontWeight: 600 }}>{service?.name}</h1>
+          <h1 style={{ fontSize: "var(--text-2xl)", fontWeight: 600 }}>{service ? svcName(service, lang) : ""}</h1>
           <div className="text-muted">{base.customer_name} · {money}</div>
         </div>
         <span className={`sbadge sbadge--${statusTone(status)}`}>{statusLabel(status, lang)}</span>

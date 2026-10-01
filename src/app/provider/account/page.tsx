@@ -4,6 +4,11 @@ import { PageHeader } from "@/components/ui";
 import { providerLang } from "@/lib/i18n/provider-lang";
 import { getProviderDict } from "@/lib/i18n/provider";
 
+export async function generateMetadata() {
+  const lang = await providerLang();
+  return { title: { absolute: lang === "zh" ? "账户 · 愿成服务商" : "Account · Yuancheng Provider" } };
+}
+
 export default async function ProviderAccount() {
   const t = getProviderDict(await providerLang()).acct;
   const p = DEMO_PROVIDERS[0];

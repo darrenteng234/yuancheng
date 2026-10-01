@@ -8,6 +8,11 @@ import { getProviderDict } from "@/lib/i18n/provider";
 // Provider portal stays scoped to the demo provider (Golden Lotus Services).
 const PROVIDER_SLUG = "golden-lotus-services";
 
+export async function generateMetadata() {
+  const lang = await providerLang();
+  return { title: { absolute: lang === "zh" ? "我的服务 · 愿成服务商" : "My services · Yuancheng Provider" } };
+}
+
 export default async function ProviderServices() {
   const lang = await providerLang();
   const t = getProviderDict(lang).services;
