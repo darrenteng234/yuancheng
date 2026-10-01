@@ -2,7 +2,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard, Store, Package, CreditCard, FileText, TrendingUp, Settings,
-  ClipboardList, Navigation, User, Sparkles, Users,
+  ClipboardList, Navigation, User, Sparkles,
 } from "lucide-react";
 
 export interface NavItem { href: string; label: string; icon?: LucideIcon; group?: string; }
@@ -17,15 +17,12 @@ export const ADMIN_NAV: NavItem[] = [
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
+// Simplified provider sidebar (Phase 7): Orders (default landing) · Services · Account.
+// Storefront / Products / Customers / Subscription routes still exist but are not linked.
 export const PROVIDER_NAV: NavItem[] = [
-  { href: "/provider", label: "Dashboard", icon: LayoutDashboard, group: "Overview" },
-  { href: "/provider/storefront", label: "Storefront", icon: Store, group: "Sell" },
-  { href: "/provider/services", label: "Services", icon: Sparkles, group: "Sell" },
-  { href: "/provider/products", label: "Products", icon: Package, group: "Sell" },
-  { href: "/provider/orders", label: "Orders", icon: ClipboardList, group: "Operate" },
-  { href: "/provider/customers", label: "Customers", icon: Users, group: "Operate" },
-  { href: "/provider/subscription", label: "Subscription", icon: CreditCard, group: "Account" },
-  { href: "/provider/account", label: "Account", icon: Settings, group: "Account" },
+  { href: "/provider/orders", label: "Orders", icon: ClipboardList },
+  { href: "/provider/services", label: "Services", icon: Sparkles },
+  { href: "/provider/account", label: "Account", icon: Settings },
 ];
 
 export const RUNNER_NAV: NavItem[] = [

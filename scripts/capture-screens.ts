@@ -13,13 +13,21 @@ const MODE = process.argv[2] || 'before'; // before | after | after-5c | after-5
 const IS_5C = MODE.startsWith('after-5');
 const IS_5F = MODE === 'after-5f'; // customer home; locale in the path, not a cookie
 const IS_6A = MODE === 'after-6a'; // customer home + one service detail per provider
+const IS_7 = MODE === 'after-7'; // customer (path locale) + provider (cookie locale)
 const PATH_LOCALE = IS_5F || IS_6A; // locale lives in the URL path, not a cookie
 const BASE = process.env.CAPTURE_BASE || 'http://localhost:3000';
 const OUT = path.join('docs/design-audit/screens', MODE);
-const BILINGUAL = IS_5C || IS_6A;
+const BILINGUAL = IS_5C || IS_6A || IS_7;
 const WIDTHS = BILINGUAL ? [375, 1440] : [375, 768, 1440];
 const LANGS = BILINGUAL ? ['en', 'zh'] : [''];
-const ROUTES: [string, string][] = IS_6A
+const ROUTES: [string, string][] = IS_7
+  ? [
+      ['home', ''],
+      ['svc-detail', '/services/temple-offering-service'],
+      ['provider-orders', '/provider/orders'],
+      ['provider-ord-a', '/provider/orders/ord-a'],
+    ]
+  : IS_6A
   ? [
       ['home', ''],
       ['svc-golden-lotus', '/services/temple-offering-service'],
@@ -49,7 +57,10 @@ async function main() {
       if (lang) await ctx.addCookies([{ name: 'yc_provider_lang', value: lang, url: BASE }]);
       const page = await ctx.newPage();
       for (const [slug, route] of ROUTES) {
-        const url = PATH_LOCALE ? `${BASE}/${lang}${route}` : `${BASE}${route}`;
+        // Phase 7 mixes schemes: customer pages use the path locale, provider
+        // pages use the yc_provider_lang cookie (set below) at the bare route.
+        const pathLocale = PATH_LOCALE || (IS_7 && !route.startsWith('/provider'));
+        const url = pathLocale && lang ? `${BASE}/${lang}${route}` : `${BASE}${route}`;
         await page.goto(url, { waitUntil: 'networkidle' });
         await page.waitForTimeout(300);
         await page.screenshot({ path: path.join(dir, `${slug}__${w}.png`), fullPage: true });
@@ -76,7 +87,7 @@ async function main() {
   if (failures.length) {
     console.log(`\nHorizontal-overflow failures (${failures.length}):`);
     failures.forEach((f) => console.log('  ✗', f));
-    if (MODE === 'after' || IS_5C || IS_6A) { console.error('\nFAIL in "' + MODE + '" run'); process.exit(1); }
+    if (MODE === 'after' || IS_5C || IS_6A || IS_7) { console.error('\nFAIL in "' + MODE + '" run'); process.exit(1); }
   } else {
     console.log('No horizontal overflow at 375px.');
   }

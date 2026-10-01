@@ -546,13 +546,6 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .tag--verified { background: var(--color-primary-bg); color: var(--color-primary); border-color: var(--evergreen-tint); }
 .tag--accent { background: var(--color-accent-bg); color: #7E6836; border-color: transparent; }
 .tag--demo { background: var(--color-surface-2); color: var(--muted); border-color: var(--color-border); font-weight: 600; letter-spacing: 0.03em; }
-.upcoming-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
-.upcoming-card { display: block; padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
-.upcoming-card:hover { border-color: var(--color-primary); }
-.upcoming-date { font-size: var(--text-xs); font-weight: 600; color: var(--color-primary); letter-spacing: 0.02em; }
-.upcoming-title { font-size: var(--text-lg); font-weight: 600; margin: 4px 0 6px; font-family: var(--font-serif, var(--font-body)); }
-.upcoming-svc { font-size: var(--text-sm); color: var(--color-text-secondary); }
-@media (max-width: 768px) { .upcoming-strip { grid-template-columns: 1fr 1fr; } }
 
 /* Category chips */
 .chip-row { display: flex; flex-wrap: wrap; gap: var(--space-3); }
@@ -582,6 +575,8 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 
 /* Steps / trust */
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
+.steps--3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 768px) { .steps, .steps--3 { grid-template-columns: 1fr; } }
 .step { padding: var(--space-6); border-radius: var(--radius-lg); background: var(--color-surface); border: 1px solid var(--color-border); }
 .step-n { width: 32px; height: 32px; border-radius: var(--radius-full); background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: var(--text-sm); }
 .step h3 { margin-top: var(--space-4); font-size: var(--text-lg); font-weight: 600; }

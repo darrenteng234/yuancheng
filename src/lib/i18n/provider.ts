@@ -12,7 +12,7 @@ const en = {
   nav: {
     brand: "Yuancheng Provider",
     Overview: "Overview", Sell: "Sell", Operate: "Operate", Account: "Account",
-    dashboard: "Dashboard", storefront: "Storefront", services: "Services",
+    dashboard: "Dashboard", storefront: "Storefront", services: "My services",
     products: "Products", orders: "Orders", customers: "Customers",
     subscription: "Subscription", account: "Account", logout: "Logout", verifying: "Verifying access…",
   },
@@ -131,7 +131,7 @@ const zh: typeof en = {
   nav: {
     brand: "愿成 服务商",
     Overview: "概览", Sell: "销售", Operate: "运营", Account: "账户",
-    dashboard: "仪表板", storefront: "店铺", services: "服务",
+    dashboard: "仪表板", storefront: "店铺", services: "我的服务",
     products: "商品", orders: "订单", customers: "客户",
     subscription: "订阅", account: "账户", logout: "退出", verifying: "正在验证访问权限…",
   },

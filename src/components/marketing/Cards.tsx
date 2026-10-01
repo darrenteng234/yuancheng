@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, ShieldCheck, Camera, Video, Store, ArrowRight, Package } from "lucide-react";
+import { MapPin, ShieldCheck, Store, ArrowRight, Package } from "lucide-react";
 
 /** Reusable discovery cards. Pure presentational — data passed in by the page. */
 
@@ -14,17 +14,13 @@ export interface ServiceCardData {
   fulfilment?: string;   // e.g. "Provider fulfilled"
   image?: string;
   demo?: boolean;
+  meta?: string;         // single meta line, e.g. "照片 + 视频记录 · 3 天内"
 }
 
 /** Small "示范 / Demo" tag for fictional demo content. */
 export function DemoTag({ zh }: { zh: boolean }) {
   return <span className="tag tag--demo">{zh ? "示范" : "Demo"}</span>;
 }
-
-const EVIDENCE_LABEL: Record<string, Record<NonNullable<ServiceCardData["evidence"]>, string>> = {
-  en: { none: "No evidence", photo: "Photo", photo_video: "Photo + video" },
-  zh: { none: "无", photo: "照片", photo_video: "照片 + 视频" },
-};
 
 function Thumb({ image, label }: { image?: string; label: string }) {
   if (image) return <img src={image} alt={label} className="card-thumb" />;
@@ -33,24 +29,14 @@ function Thumb({ image, label }: { image?: string; label: string }) {
 
 export function ServiceCard({ locale, s }: { locale: string; s: ServiceCardData }) {
   const zh = locale === "zh";
-  const ev = EVIDENCE_LABEL[zh ? "zh" : "en"];
   return (
     <Link href={`/${locale}/services/${s.slug}`} className="disc-card">
       <Thumb image={s.image} label={s.name} />
       <div className="disc-card-body">
+        {s.demo ? <div style={{ marginBottom: 6 }}><DemoTag zh={zh} /></div> : null}
         <div className="disc-card-title">{s.name}</div>
         <div className="disc-card-sub">{s.provider}</div>
-        {s.place ? (
-          <div className="disc-card-meta"><MapPin size={13} /> {s.place}</div>
-        ) : null}
-        <div className="disc-card-tags">
-          {s.demo ? <DemoTag zh={zh} /> : null}
-          {s.verified ? <span className="tag tag--verified"><ShieldCheck size={13} /> {zh ? "已核实服务商" : "Verified provider"}</span> : null}
-          {s.evidence && s.evidence !== "none" ? (
-            <span className="tag">{s.evidence === "photo_video" ? <Video size={13} /> : <Camera size={13} />} {ev[s.evidence]}</span>
-          ) : null}
-          {s.fulfilment ? <span className="tag">{s.fulfilment}</span> : null}
-        </div>
+        {s.meta ? <div className="disc-card-meta">{s.meta}</div> : null}
         <div className="disc-card-foot">
           <span className="disc-card-price">{s.price}</span>
           <span className="disc-card-cta">{zh ? "查看服务" : "View service"} <ArrowRight size={15} /></span>

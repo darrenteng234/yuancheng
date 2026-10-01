@@ -7,8 +7,8 @@ import { LOCALES, DEFAULT_LOCALE } from "@/lib/i18n";
 import type { Locale } from "@/types/platform";
 
 const LABELS: Record<string, Record<string, string>> = {
-  en: { discover: "Discover", providers: "Providers", places: "Places", how: "How it works", orders: "My orders", signin: "Sign in", forProviders: "For providers" },
-  zh: { discover: "发现", providers: "服务商", places: "场所", how: "运作方式", orders: "我的订单", signin: "登录", forProviders: "服务商入口" },
+  en: { services: "Services", how: "How it works", orders: "My orders", signin: "Sign in", forProviders: "For providers" },
+  zh: { services: "服务", how: "运作方式", orders: "我的订单", signin: "登录", forProviders: "服务商入口" },
 };
 
 /** Shared customer-facing header. Locale-aware. No emoji, single light theme. */
@@ -16,9 +16,7 @@ export function SiteHeader({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   const L = LABELS[locale === "zh" ? "zh" : "en"];
   const [open, setOpen] = React.useState(false);
   const nav = [
-    { href: `/${locale}/discover`, label: L.discover },
-    { href: `/${locale}/discover?tab=providers`, label: L.providers },
-    { href: `/${locale}/discover?tab=places`, label: L.places },
+    { href: `/${locale}/discover`, label: L.services },
     { href: `/${locale}/how-it-works`, label: L.how },
   ];
   const other = LOCALES.filter((x) => x !== locale)[0] as Locale | undefined;

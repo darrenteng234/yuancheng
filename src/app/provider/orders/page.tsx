@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Receipt } from "lucide-react";
 import type { OrderStatus } from "@/types/platform";
 import { DEMO_ORDERS, getService, money, orderCreatedISO, orderUploadedISO } from "@/lib/demo/catalog";
 import { PageHeader, OrderStatusBadge } from "@/components/ui";
@@ -20,15 +20,51 @@ export default async function ProviderOrders({ searchParams }: { searchParams: P
     { key: "completed", label: t.completed, match: (s: string) => s === "completed" },
   ];
   const od = getProviderDict(lang).od;
+  const dash = getProviderDict(lang).dash;
   const active = FILTERS.find((x) => x.key === f) ?? FILTERS[0];
   const overdueOf = (o: (typeof DEMO_ORDERS)[number]) => o.status === "payment_proof_submitted" && isOverdue(orderUploadedISO(o));
   // Overdue payment reviews sort to the top.
   const orders = DEMO_ORDERS.filter((o) => !active.match || active.match(o.status))
     .sort((a, b) => Number(overdueOf(b)) - Number(overdueOf(a)));
+  // Needs attention — payment receipts awaiting review (was the dashboard).
+  const needs = DEMO_ORDERS.filter((o) => o.status === "payment_proof_submitted")
+    .sort((a, b) => Number(overdueOf(b)) - Number(overdueOf(a)));
 
   return (
     <div style={{ padding: "var(--space-6)", maxWidth: 1000, margin: "0 auto" }}>
       <PageHeader title={t.title} subtitle={t.subtitle} />
+
+      {/* Needs attention (moved from the dashboard) */}
+      <section style={{ marginBottom: "var(--space-8)" }}>
+        <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: "var(--space-4)" }}>{fill(dash.needsTitle, { n: String(needs.length) })}</h2>
+        {needs.length === 0 ? (
+          <div className="metric-card"><p className="text-muted">{dash.emptyAttention}</p></div>
+        ) : (
+          <div className="needs-attention">
+            {needs.map((o) => {
+              const overdue = overdueOf(o);
+              const service = getService(o.serviceSlug);
+              return (
+                <div key={o.id} className="na-row">
+                  <Receipt size={18} style={{ color: "var(--color-primary)", flex: "none" }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600 }}>{dash.checkReceipt}</div>
+                    <div className="text-muted" style={{ fontSize: "var(--text-sm)" }}>{o.order_number} · {service?.name} · {o.customer_name}</div>
+                    <div style={{ fontSize: "var(--text-sm)", marginTop: 2 }}>
+                      {money(o.amount, o.currency)} · {overdue
+                        ? <span className="sbadge sbadge--warning">{od.overdue}</span>
+                        : <span className="text-muted">{fill(od.verifyBy, { deadline: verifyDeadlineLabel(orderUploadedISO(o), lang) })}</span>}
+                    </div>
+                  </div>
+                  <Link href={`/provider/orders/${o.id}`} className="btn btn-primary btn-sm" style={{ flex: "none" }}>{dash.review}</Link>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <h2 style={{ fontSize: "var(--text-lg)", fontWeight: 600, marginBottom: "var(--space-4)" }}>{lang === "zh" ? "所有订单" : "All orders"}</h2>
       <div className="tabs">
         {FILTERS.map((x) => (
           <Link key={x.key} href={`/provider/orders?f=${x.key}`} className="tab" aria-selected={x.key === active.key} aria-current={x.key === active.key ? "page" : undefined}>{x.label}</Link>

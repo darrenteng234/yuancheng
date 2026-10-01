@@ -191,25 +191,6 @@ export const providersByPlace = (slug: string) => DEMO_PROVIDERS.filter((p) => p
 export const productsByProvider = (slug: string) => DEMO_PRODUCTS.filter((p) => p.providerSlug === slug);
 export const servicesByOccasion = (o: Occasion) => DEMO_SERVICES.filter((s) => s.occasions.includes(o));
 
-// ── Upcoming occasions (computed from today so the demo never goes stale) ────────
-// Approximate festival dates for the demo; the "next" one after today is shown.
-const FESTIVALS: { key: Occasion; dates: string[] }[] = [
-  { key: "cny_taisui", dates: ["2026-02-17", "2027-02-06", "2028-01-26"] },
-  { key: "qingming", dates: ["2026-04-04", "2027-04-05", "2028-04-04"] },
-  { key: "vesak", dates: ["2026-05-31", "2027-05-20", "2028-05-09"] },
-  { key: "hungry_ghost", dates: ["2026-09-05", "2027-08-26", "2028-09-13"] },
-];
-export interface UpcomingOccasion { key: Occasion; date: string; }
-export function upcomingOccasions(now: Date = new Date()): UpcomingOccasion[] {
-  const today = now.getTime();
-  const next: UpcomingOccasion[] = [];
-  for (const f of FESTIVALS) {
-    const d = f.dates.find((x) => new Date(x + "T00:00:00+08:00").getTime() > today);
-    if (d) next.push({ key: f.key, date: d });
-  }
-  return next.sort((a, b) => a.date.localeCompare(b.date));
-}
-
 // ── Packages (customer-facing: Service → Package). "What's included" per price ──
 export interface DemoPackage {
   id: string; serviceSlug: string; name: string; nameZh: string; tier: string; price: number; currency: string;
