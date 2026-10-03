@@ -35,7 +35,7 @@ const TABS = [
   { key: "services", en: "Services", zh: "服务" },
   { key: "providers", en: "Providers", zh: "服务商" },
   { key: "places", en: "Places", zh: "场所" },
-  { key: "products", en: "Products", zh: "商品" },
+  { key: "products", en: "Products", zh: "供品" },
 ];
 
 export default async function Discover({
@@ -135,7 +135,7 @@ export default async function Discover({
 
       {showProducts ? (
         <section style={{ marginBottom: "var(--space-12)" }}>
-          {active === "all" ? <h2 className="section-head" style={{ fontSize: "var(--text-2xl)", fontWeight: 600 }}>{zh ? "商品" : "Products"}</h2> : null}
+          {active === "all" ? <h2 className="section-head" style={{ fontSize: "var(--text-2xl)", fontWeight: 600 }}>{zh ? "供品" : "Products"}</h2> : null}
           <div className="disc-grid">{PRODUCTS.map((pr) => <ProductCard key={pr.slug} locale={l} pr={pr} />)}</div>
         </section>
       ) : null}

@@ -571,6 +571,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
 .disc-card-stats strong { color: var(--color-text); }
 .disc-card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: var(--space-4); }
 .disc-card-price { font-size: var(--text-xl); font-weight: 600; color: var(--color-text); }
+.disc-card-amount { font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: var(--space-3); }
 .disc-card-cta { display: inline-flex; align-items: center; gap: 5px; color: var(--color-primary); font-weight: 600; font-size: var(--text-sm); }
 
 /* Steps / trust */

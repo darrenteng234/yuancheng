@@ -4,7 +4,7 @@ import type { Dictionary } from './en';
 export const zh: Dictionary = {
   common: {
     appName: '愿成',
-    tagline: '代您完成心意，每笔订单附完成记录。',
+    tagline: '代您完成心意，每笔委托附完成记录。',
     loading: '加载中…',
     error: '出错了',
     retry: '重试',
@@ -21,13 +21,13 @@ export const zh: Dictionary = {
     discover: '发现',
     howItWorks: '服务流程',
     faq: '常见问题',
-    myOrders: '我的订单',
+    myOrders: '我的委托',
     signIn: '登录',
     providerPortal: '服务商入口',
   },
   home: {
     heroTitle: '愿成',
-    heroSubtitle: '诚心代拜与服务，由我们代为完成——每笔订单都附有照片与视频记录。',
+    heroSubtitle: '诚心代拜与服务，由我们代为完成——每笔委托都附有照片与视频记录。',
     ctaDiscover: '服务流程',
     ctaProvider: '成为服务商',
     featureFulfilment: '可信履约',
@@ -39,7 +39,7 @@ export const zh: Dictionary = {
   },
   howItWorks: {
     title: '服务流程',
-    intro: '从下单到完成，每一步都有记录。',
+    intro: '从提交委托到完成，每一步都有记录。',
     steps: [
       { title: '选择服务', body: '在服务商店铺中选择服务与规格。' },
       { title: '安全付款', body: '通过 Stripe 结账，金额由服务商设定。' },
@@ -50,9 +50,9 @@ export const zh: Dictionary = {
   faq: {
     title: '常见问题',
     items: [
-      { q: '如何确认订单已完成？', a: '每笔订单都附有照片/视频记录，审核通过后才标记完成。' },
-      { q: '如何追踪订单？', a: '使用结账后显示的安全追踪链接，无需注册。' },
-      { q: '可以退款吗？', a: '可以，视退款政策而定。请附上订单编号联系我们。' },
+      { q: '如何确认委托已完成？', a: '每笔委托都附有照片/视频记录，审核通过后才标记完成。' },
+      { q: '如何追踪委托？', a: '使用结账后显示的安全追踪链接，无需注册。' },
+      { q: '可以退款吗？', a: '可以，视退款政策而定。请附上委托编号联系我们。' },
       { q: '会承诺结果吗？', a: '我们协助完成寺庙相关事务，但不保证任何宗教或灵性结果。' },
     ],
   },
@@ -62,11 +62,11 @@ export const zh: Dictionary = {
   },
   terms: {
     title: '服务条款',
-    body: '使用愿成即表示您同意：我们协助完成寺庙相关事务，不保证任何宗教或灵性结果。订单由独立服务商完成，服务商负责履约，价格由服务商设定。完整条款于结账时提供。',
+    body: '使用愿成即表示您同意：我们协助完成寺庙相关事务，不保证任何宗教或灵性结果。委托由独立服务商完成，服务商负责履约，价格由服务商设定。完整条款于结账时提供。',
   },
   refund: {
     title: '退款政策',
-    body: '如服务商无法完成订单，将由服务商直接退款给您。愿成不代收或代转款项。请凭订单编号联系服务商处理。',
+    body: '如服务商无法完成委托，将由服务商直接退款给您。愿成不代收或代转款项。请凭委托编号联系服务商处理。',
   },
   order: {
     status: {
@@ -83,9 +83,9 @@ export const zh: Dictionary = {
       refunded: '已退款',
       disputed: '争议中',
     },
-    trackTitle: '订单追踪',
-    trackIntro: '输入订单编号与访问令牌，或打开结账后的安全链接。',
-    orderNumber: '订单编号',
+    trackTitle: '委托追踪',
+    trackIntro: '输入委托编号与访问令牌，或打开结账后的安全链接。',
+    orderNumber: '委托编号',
   },
   auth: {
     signInTitle: '登录',
@@ -103,7 +103,7 @@ export const zh: Dictionary = {
     dashboard: '仪表板',
     storefront: '店铺',
     products: '产品',
-    orders: '订单',
+    orders: '委托',
     payments: '收款',
     account: '账户',
     skuLimitReached: '已达到当前方案的上架数量上限。',

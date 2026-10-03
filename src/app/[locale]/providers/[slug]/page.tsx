@@ -37,7 +37,7 @@ export default async function ProviderDetail({ params }: { params: Promise<{ loc
       </section>
 
       <section className="section--tight">
-        <h2 style={{ fontSize: "var(--text-2xl)", fontWeight: 600, marginBottom: "var(--space-5)" }}>{zh ? "商品" : "Products"}</h2>
+        <h2 style={{ fontSize: "var(--text-2xl)", fontWeight: 600, marginBottom: "var(--space-5)" }}>{zh ? "供品" : "Products"}</h2>
         <div className="disc-grid">
           {products.map((pr) => (
             <ProductCard key={pr.slug} locale={l} pr={{ slug: pr.slug, name: pr.name, provider: p.name, price: money(pr.price, pr.currency) }} />

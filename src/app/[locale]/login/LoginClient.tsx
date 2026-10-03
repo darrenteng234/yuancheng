@@ -36,7 +36,7 @@ export default function LoginClient() {
       <div className="auth-card">
         <Link href={`/${locale}`} className="auth-brand">YUANCHENG</Link>
         <h1>{zh ? "欢迎回到愿成" : "Welcome to Yuancheng"}</h1>
-        <p className="text-muted" style={{ marginBottom: "var(--space-6)" }}>{zh ? "登录以管理您的订单。" : "Sign in to manage your orders."}</p>
+        <p className="text-muted" style={{ marginBottom: "var(--space-6)" }}>{zh ? "登录以管理您的委托。" : "Sign in to manage your orders."}</p>
         {error ? <div className="banner-review" style={{ marginBottom: "var(--space-4)", background: "var(--color-error-bg)", color: "var(--color-error)" }}>{error}</div> : null}
         <form onSubmit={onSubmit} style={{ display: "grid", gap: "var(--space-4)" }}>
           <div>

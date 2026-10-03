@@ -14,12 +14,12 @@ export default async function Orders({ params }: { params: Promise<{ locale: str
 
   return (
     <div className="container section">
-      <PageHeader title={zh ? "我的订单" : "My orders"} subtitle={zh ? "您的服务请求会显示在这里。" : "Your service requests appear here."} />
+      <PageHeader title={zh ? "我的委托" : "My orders"} subtitle={zh ? "您的服务请求会显示在这里。" : "Your service requests appear here."} />
       {orders.length === 0 ? (
         <div className="state-block">
           <PackageOpen size={32} className="state-icon" />
-          <h3>{zh ? "还没有订单" : "No orders yet"}</h3>
-          <p>{zh ? "下单后，您的订单会显示在这里。" : "Your orders will appear here once you place a service request."}</p>
+          <h3>{zh ? "还没有委托" : "No orders yet"}</h3>
+          <p>{zh ? "提交委托后，您的委托会显示在这里。" : "Your orders will appear here once you place a service request."}</p>
           <Link href={`/${l}/discover`} className="btn btn-primary btn-sm">{zh ? "浏览服务" : "Explore services"}</Link>
         </div>
       ) : (

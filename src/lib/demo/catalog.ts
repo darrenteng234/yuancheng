@@ -173,7 +173,7 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
     price: 68, currency: "MYR",
     about: {
       en: "A physical offering set. Purchased externally — contact the provider to arrange.",
-      zh: "实体供品套装。通过外部渠道购买——请联系服务商安排。",
+      zh: "实体供品套装。通过外部渠道请购——请联系服务商安排。",
     },
   },
 ];

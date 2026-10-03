@@ -23,10 +23,10 @@ export default async function ProductDetail({ params }: { params: Promise<{ loca
           {provider ? (
             <Link href={`/${l}/providers/${provider.slug}`} style={{ color: "var(--color-text-secondary)", marginTop: "4px", display: "inline-block" }}>{provider.name}</Link>
           ) : null}
-          <div className="svc-tags"><span className="tag"><Package size={13} /> {zh ? "实体商品" : "Physical product"}</span></div>
+          <div className="svc-tags"><span className="tag"><Package size={13} /> {zh ? "实体供品" : "Physical product"}</span></div>
           <div className="svc-price">{money(pr.price, pr.currency)}</div>
           <div className="demo-banner" style={{ marginBottom: "var(--space-4)" }}>
-            {zh ? "此实体商品在 Yuancheng 之外购买。" : "This physical product is purchased outside Yuancheng."}
+            {zh ? "此实体供品在 Yuancheng 之外请购。" : "This physical product is purchased outside Yuancheng."}
           </div>
           {provider ? (
             <Link href={`/${l}/providers/${provider.slug}`} className="btn btn-primary btn-lg btn-full">{zh ? "联系服务商" : "Contact provider"}</Link>
@@ -37,7 +37,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ loca
         </aside>
       </div>
       <section className="svc-section">
-        <h2>{zh ? "关于此商品" : "About this product"}</h2>
+        <h2>{zh ? "关于此供品" : "About this product"}</h2>
         <p>{pr.about[zh ? "zh" : "en"]}</p>
       </section>
     </div>

@@ -28,7 +28,7 @@ export function SiteFooter({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
           {/* col 3 — Help */}
           <div>
             <h4 className="footer-col-head">{zh ? "帮助" : "Help"}</h4>
-            <Link href={`/${locale}/orders`} className="footer-link">{zh ? "我的订单" : "My orders"}</Link>
+            <Link href={`/${locale}/orders`} className="footer-link">{zh ? "我的委托" : "My orders"}</Link>
             <Link href={`/${locale}/refund`} className="footer-link">{zh ? "退款政策" : "Refund policy"}</Link>
             <Link href={`/${locale}/terms`} className="footer-link">{zh ? "服务条款" : "Terms of service"}</Link>
           </div>

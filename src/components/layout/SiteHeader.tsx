@@ -8,7 +8,7 @@ import type { Locale } from "@/types/platform";
 
 const LABELS: Record<string, Record<string, string>> = {
   en: { services: "Services", how: "How it works", orders: "My orders", signin: "Sign in", forProviders: "For providers" },
-  zh: { services: "服务", how: "运作方式", orders: "我的订单", signin: "登录", forProviders: "服务商入口" },
+  zh: { services: "服务", how: "运作方式", orders: "我的委托", signin: "登录", forProviders: "服务商入口" },
 };
 
 /** Shared customer-facing header. Locale-aware. No emoji, single light theme. */

@@ -37,8 +37,8 @@ export function ServiceCard({ locale, s }: { locale: string; s: ServiceCardData 
         <div className="disc-card-title">{s.name}</div>
         <div className="disc-card-sub">{s.provider}</div>
         {s.meta ? <div className="disc-card-meta">{s.meta}</div> : null}
+        <div className="disc-card-amount">{zh ? "供奉金 " : "Offering "}{s.price}{zh ? "（由服务商定）" : " (set by provider)"}</div>
         <div className="disc-card-foot">
-          <span className="disc-card-price">{s.price}</span>
           <span className="disc-card-cta">{zh ? "查看服务" : "View service"} <ArrowRight size={15} /></span>
         </div>
       </div>

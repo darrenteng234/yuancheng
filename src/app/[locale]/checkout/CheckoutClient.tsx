@@ -46,7 +46,7 @@ export default function CheckoutClient() {
             {zh ? "上传收据并不代表付款已核实。服务商将审核并确认您的付款。"
                 : "Uploading your receipt does not mean payment has been verified. The provider will review and confirm your payment."}
           </p>
-          <Link href={`/${locale}/orders/ord-a`} className="btn btn-primary">{zh ? "查看订单" : "View order"}</Link>
+          <Link href={`/${locale}/orders/ord-a`} className="btn btn-primary">{zh ? "查看委托" : "View order"}</Link>
         </div>
       </div>
     );
@@ -63,7 +63,7 @@ export default function CheckoutClient() {
         <div>
           {/* 1. Package / order */}
           <div className="checkout-step">
-            <h2><span className="step-num">1</span> {zh ? "选择套餐" : "Choose package"}</h2>
+            <h2><span className="step-num">1</span> {zh ? "选择供奉方式" : "Choose package"}</h2>
             <div style={{ display: "grid", gap: "var(--space-3)" }}>
               {pkgs.map((p) => (
                 <PackageCard key={p.id} name={zh ? p.nameZh : p.name} price={money(p.price, p.currency)} locale={locale}
@@ -135,16 +135,16 @@ export default function CheckoutClient() {
 
         {/* Summary */}
         <aside className="checkout-summary">
-          <h3 style={{ fontWeight: 600, marginBottom: "var(--space-4)" }}>{zh ? "订单摘要" : "Order summary"}</h3>
+          <h3 style={{ fontWeight: 600, marginBottom: "var(--space-4)" }}>{zh ? "委托摘要" : "Order summary"}</h3>
           <div className="summary-row"><span>{zh ? "服务" : "Service"}</span><span style={{ color: "var(--color-text)", fontWeight: 500 }}>{svcName(service, locale)}</span></div>
-          <div className="summary-row"><span>{zh ? "套餐" : "Package"}</span><span style={{ color: "var(--color-text)", fontWeight: 500 }}>{zh ? pkg.nameZh : pkg.name}</span></div>
+          <div className="summary-row"><span>{zh ? "供奉方式" : "Package"}</span><span style={{ color: "var(--color-text)", fontWeight: 500 }}>{zh ? pkg.nameZh : pkg.name}</span></div>
           <div className="summary-row"><span>{zh ? "服务商" : "Provider"}</span><span>{provider ? provName(provider, locale) : null}</span></div>
           {place ? <div className="summary-row"><span>{zh ? "场所" : "Place"}</span><span>{placeName(place, locale)}</span></div> : null}
           <div className="summary-row"><span>{zh ? "代办" : "Fulfilment"}</span><span>{zh ? "服务商代办" : "Provider"}</span></div>
           <div className="summary-row"><span>{zh ? "完成记录" : "Evidence"}</span><span>{pkg.evidence === "photo_video" ? (zh ? "照片+视频" : "Photo+video") : pkg.evidence === "photo" ? (zh ? "照片" : "Photo") : (zh ? "无" : "None")}</span></div>
           <div className="summary-total"><span>{zh ? "总计" : "Total"}</span><span>{money(amount, pkg.currency)}</span></div>
           <p className="text-muted" style={{ fontSize: "var(--text-xs)", marginTop: "var(--space-4)" }}>
-            {zh ? "第一阶段：直接向服务商付款。愿成不代收款项。" : "Stage 1: you pay the provider directly. Yuancheng does not collect the funds."}
+            {zh ? "款项直接交给服务商，愿成不经手。" : "Payment goes directly to the provider; Yuancheng never handles the funds."}
           </p>
         </aside>
       </div>

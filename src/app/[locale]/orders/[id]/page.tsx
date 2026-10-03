@@ -40,7 +40,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
   return (
     <div className="container section" style={{ maxWidth: 920 }}>
       <Link href={`/${l}/orders`} className="nav-link-plain" style={{ display: "inline-flex", alignItems: "center", gap: 4, marginBottom: "var(--space-4)" }}>
-        <ArrowLeft size={15} /> {zh ? "所有订单" : "All orders"}
+        <ArrowLeft size={15} /> {zh ? "所有委托" : "All orders"}
       </Link>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "var(--space-3)", marginBottom: "var(--space-6)" }}>
@@ -56,11 +56,11 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
         {/* Left: details */}
         <div>
           <div className="checkout-step">
-            <h2>{zh ? "订单详情" : "Order details"}</h2>
+            <h2>{zh ? "委托详情" : "Order details"}</h2>
             <dl className="pay-method-grid">
-              <div><dt>{zh ? "套餐" : "Package"}</dt><dd>{pkg?.name}</dd></div>
+              <div><dt>{zh ? "供奉方式" : "Package"}</dt><dd>{pkg?.name}</dd></div>
               <div><dt>{zh ? "金额" : "Amount"}</dt><dd>{money(order.amount, order.currency)}</dd></div>
-              <div><dt>{zh ? "下单日期" : "Created"}</dt><dd>{formatDate(orderCreatedISO(order))}</dd></div>
+              <div><dt>{zh ? "提交委托日期" : "Created"}</dt><dd>{formatDate(orderCreatedISO(order))}</dd></div>
               <div><dt>{zh ? "代办" : "Fulfilment"}</dt><dd>{zh ? "服务商代办" : "Provider"}</dd></div>
             </dl>
             <div style={{ marginTop: "var(--space-4)" }}>
@@ -83,7 +83,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
                 <div style={{ display: "flex", gap: "var(--space-3)", flexWrap: "wrap", marginTop: "var(--space-3)" }}>
                   <WhatsAppAction number={DEMO_PROVIDER_WHATSAPP} text={verifyChaseMessage(order.order_number, zh ? "zh" : "en")}
                     label={zh ? "WhatsApp 联系服务商" : "WhatsApp the provider"} lang={zh ? "zh" : "en"} className="btn btn-secondary btn-sm" />
-                  <WhatsAppAction number={SUPPORT_WHATSAPP} text={zh ? `订单 ${order.order_number} 超过 24 小时仍未核实。` : `Order ${order.order_number} not verified after 24 hours.`}
+                  <WhatsAppAction number={SUPPORT_WHATSAPP} text={zh ? `委托 ${order.order_number} 超过 24 小时仍未核实。` : `Order ${order.order_number} not verified after 24 hours.`}
                     label={zh ? "超过 24 小时仍未核实？联系愿成客服" : "Not verified after 24 hours? Contact Yuancheng support"} lang={zh ? "zh" : "en"}
                     className="nav-link-plain" style={{ fontSize: "var(--text-sm)" }} />
                 </div>
@@ -104,7 +104,7 @@ export default async function OrderDetail({ params }: { params: Promise<{ locale
           <Timeline steps={buildTimeline(order.status, zh)} />
           {isCompleted ? (
             <div style={{ marginTop: "var(--space-5)", padding: "var(--space-4)", background: "var(--color-success-bg)", color: "var(--color-success)", borderRadius: "var(--radius-md)", fontSize: "var(--text-sm)", fontWeight: 500 }}>
-              {zh ? "此订单已完成，记录已备妥。" : "This order is complete and evidence is available."}
+              {zh ? "此委托已完成，记录已备妥。" : "This order is complete and evidence is available."}
             </div>
           ) : null}
         </aside>

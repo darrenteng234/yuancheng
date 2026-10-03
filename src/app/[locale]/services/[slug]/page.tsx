@@ -54,7 +54,7 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
           </div>
           <div className="svc-price">{pkgs.length ? (zh ? "起 " : "From ") : ""}{money(startPrice, s.currency)}</div>
           <Link href={`/${l}/checkout?service=${s.slug}`} className="btn btn-primary btn-lg btn-full">
-            {zh ? "选择套餐" : "Choose a package"}
+            {zh ? "选择供奉方式" : "Choose a package"}
           </Link>
           <p style={{ fontSize: "var(--text-xs)", color: "var(--color-text-muted)", marginTop: "var(--space-3)", textAlign: "center" }}>
             {zh ? "结账使用 Stripe 测试模式（Beta）。" : "Checkout uses Stripe test mode (beta)."}
@@ -86,8 +86,8 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
 
       {/* 4 — Packages */}
       <section className="svc-section">
-        <h2 style={{ display: "flex", alignItems: "center", gap: "8px" }}><Gift size={18} /> {zh ? "配套" : "Packages"}</h2>
-        <p style={{ marginBottom: "var(--space-5)" }}>{zh ? "每个配套包含以下内容。" : "Each package includes the following."}</p>
+        <h2 style={{ display: "flex", alignItems: "center", gap: "8px" }}><Gift size={18} /> {zh ? "供奉方式" : "Packages"}</h2>
+        <p style={{ marginBottom: "var(--space-5)" }}>{zh ? "每个供奉方式包含以下内容。" : "Each package includes the following."}</p>
         <div className="disc-grid">
           {pkgs.map((p) => (
             <PackageCard key={p.id} name={zh ? p.nameZh : p.name} price={money(p.price, p.currency)} locale={l}
@@ -108,7 +108,7 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
 
       <div style={{ marginTop: "var(--space-8)" }}>
         <Link href={`/${l}/checkout?service=${s.slug}`} className="btn btn-primary btn-lg">
-          <CheckCircle2 size={18} /> {zh ? "选择套餐" : "Choose a package"}
+          <CheckCircle2 size={18} /> {zh ? "选择供奉方式" : "Choose a package"}
         </Link>
       </div>
     </div>
